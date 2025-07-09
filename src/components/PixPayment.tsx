@@ -3,8 +3,7 @@ import { X, Copy, CheckCircle, QrCode, CreditCard, Clock, AlertCircle, Loader } 
 import QRCode from 'qrcode';
 import mercadoPagoService from '../services/mercadoPagoService';
 
-function EnvironmentBadge() {
-  const status = mercadoPagoService.getCredentialsStatus();
+function EnvironmentBadge({ status }: { status: any }) {
   
   if (!status.isConfigured) {
     return (
@@ -61,13 +60,24 @@ export default function PixPayment({
   const [paymentStatus, setPaymentStatus] = useState<'creating' | 'pending' | 'approved' | 'rejected' | 'error'>('creating');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [credentialsStatus, setCredentialsStatus] = useState<any>({ isConfigured: false, environment: 'demo', isValid: false });
 
   useEffect(() => {
     if (isOpen) {
+      loadCredentialsStatus();
       createPixPayment();
       startTimer();
     }
   }, [isOpen, totalAmount]);
+
+  const loadCredentialsStatus = async () => {
+    try {
+      const status = await mercadoPagoService.getCredentialsStatus();
+      setCredentialsStatus(status);
+    } catch (error) {
+      console.error('Erro ao carregar status das credenciais:', error);
+    }
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -238,7 +248,7 @@ export default function PixPayment({
               <h3 className="text-2xl font-serif text-sage-600">Pagamento PIX</h3>
               <div className="flex items-center space-x-2">
                 <p className="text-stone-600">Mercado Pago - Seguro e Confiável</p>
-                <EnvironmentBadge />
+                <EnvironmentBadge status={credentialsStatus} />
               </div>
             </div>
             <button

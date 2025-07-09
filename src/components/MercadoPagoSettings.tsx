@@ -10,24 +10,36 @@ import {
   AlertCircle,
   ExternalLink,
   Trash2,
-  Settings
+  Settings,
+  Shield,
+  Server
 } from 'lucide-react';
+import mercadoPagoService from '../services/mercadoPagoService';
 
 interface MercadoPagoCredentials {
   accessToken: string;
   publicKey: string;
   environment: 'sandbox' | 'production';
+}
+
+interface CredentialsStatus {
   isConfigured: boolean;
+  environment: string;
+  isValid: boolean;
   lastTested?: string;
-  isValid?: boolean;
 }
 
 export default function MercadoPagoSettings() {
   const [credentials, setCredentials] = useState<MercadoPagoCredentials>({
     accessToken: '',
     publicKey: '',
-    environment: 'sandbox',
-    isConfigured: false
+    environment: 'sandbox'
+  });
+  
+  const [status, setStatus] = useState<CredentialsStatus>({
+    isConfigured: false,
+    environment: 'demo',
+    isValid: false
   });
   
   const [showAccessToken, setShowAccessToken] = useState(false);
@@ -38,45 +50,52 @@ export default function MercadoPagoSettings() {
     message: string;
   } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadCredentials();
+    loadCredentialsStatus();
   }, []);
 
-  const loadCredentials = () => {
-    const saved = localStorage.getItem('mercadoPagoCredentials');
-    if (saved) {
-      try {
-        const parsedCredentials = JSON.parse(saved);
-        setCredentials(parsedCredentials);
-      } catch (error) {
-        console.error('Erro ao carregar credenciais:', error);
-      }
+  const loadCredentialsStatus = async () => {
+    setIsLoading(true);
+    try {
+      const credentialsStatus = await mercadoPagoService.getCredentialsStatus();
+      setStatus(credentialsStatus);
+    } catch (error) {
+      console.error('Erro ao carregar status das credenciais:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const saveCredentials = async () => {
     setIsSaving(true);
+    setTestResult(null);
     
     try {
-      const credentialsToSave = {
-        ...credentials,
-        isConfigured: !!(credentials.accessToken && credentials.publicKey),
-        lastTested: new Date().toISOString()
-      };
-
-      localStorage.setItem('mercadoPagoCredentials', JSON.stringify(credentialsToSave));
-      setCredentials(credentialsToSave);
+      const result = await mercadoPagoService.saveCredentials(credentials);
       
-      // Notificar outros componentes sobre a mudança
-      window.dispatchEvent(new CustomEvent('mercadoPagoCredentialsUpdated'));
-      
-      setTestResult({
-        success: true,
-        message: 'Credenciais salvas com sucesso!'
-      });
-      
-      setTimeout(() => setTestResult(null), 3000);
+      if (result.success) {
+        setTestResult({
+          success: true,
+          message: result.message
+        });
+        
+        // Recarregar status
+        await loadCredentialsStatus();
+        
+        // Limpar formulário
+        setCredentials({
+          accessToken: '',
+          publicKey: '',
+          environment: 'sandbox'
+        });
+      } else {
+        setTestResult({
+          success: false,
+          message: result.message
+        });
+      }
     } catch (error) {
       setTestResult({
         success: false,
@@ -84,6 +103,7 @@ export default function MercadoPagoSettings() {
       });
     } finally {
       setIsSaving(false);
+      setTimeout(() => setTestResult(null), 5000);
     }
   };
 
@@ -100,62 +120,49 @@ export default function MercadoPagoSettings() {
     setTestResult(null);
 
     try {
-      // Teste básico da API do Mercado Pago
-      const baseUrl = credentials.environment === 'sandbox' 
-        ? 'https://api.mercadopago.com/sandbox'
-        : 'https://api.mercadopago.com';
-
-      const response = await fetch(`${baseUrl}/v1/account/settings`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${credentials.accessToken}`,
-          'Content-Type': 'application/json'
-        }
+      const result = await mercadoPagoService.testCredentials({
+        accessToken: credentials.accessToken,
+        environment: credentials.environment
       });
-
-      if (response.ok) {
-        const updatedCredentials = {
-          ...credentials,
-          isValid: true,
-          lastTested: new Date().toISOString()
-        };
-        
-        setCredentials(updatedCredentials);
-        localStorage.setItem('mercadoPagoCredentials', JSON.stringify(updatedCredentials));
-        
-        setTestResult({
-          success: true,
-          message: `Credenciais válidas para ambiente ${credentials.environment}!`
-        });
-      } else {
-        throw new Error(`Erro ${response.status}: ${response.statusText}`);
-      }
+      
+      setTestResult(result);
     } catch (error) {
-      setCredentials(prev => ({ ...prev, isValid: false }));
       setTestResult({
         success: false,
-        message: `Erro ao testar credenciais: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
+        message: 'Erro ao testar credenciais'
       });
     } finally {
       setIsTesting(false);
+      setTimeout(() => setTestResult(null), 5000);
     }
   };
 
-  const clearCredentials = () => {
-    if (confirm('Tem certeza que deseja limpar todas as credenciais?')) {
-      const emptyCredentials = {
-        accessToken: '',
-        publicKey: '',
-        environment: 'sandbox' as const,
-        isConfigured: false
-      };
+  const clearCredentials = async () => {
+    if (confirm('Tem certeza que deseja limpar todas as credenciais do servidor?')) {
+      try {
+        const result = await mercadoPagoService.clearCredentials();
+        
+        if (result.success) {
+          setTestResult({
+            success: true,
+            message: result.message
+          });
+          
+          await loadCredentialsStatus();
+        } else {
+          setTestResult({
+            success: false,
+            message: result.message
+          });
+        }
+      } catch (error) {
+        setTestResult({
+          success: false,
+          message: 'Erro ao limpar credenciais'
+        });
+      }
       
-      setCredentials(emptyCredentials);
-      localStorage.removeItem('mercadoPagoCredentials');
-      setTestResult(null);
-      
-      // Notificar outros componentes
-      window.dispatchEvent(new CustomEvent('mercadoPagoCredentialsUpdated'));
+      setTimeout(() => setTestResult(null), 3000);
     }
   };
 
@@ -175,24 +182,34 @@ export default function MercadoPagoSettings() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+        <span className="ml-3 text-stone-600">Carregando configurações...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-xl font-serif text-sage-600 flex items-center space-x-2">
-            <Settings className="w-6 h-6" />
-            <span>Configurações Mercado Pago</span>
+            <Shield className="w-6 h-6" />
+            <span>Configurações Mercado Pago (Backend Seguro)</span>
           </h3>
-          <p className="text-stone-600">Configure suas credenciais de acesso à API do Mercado Pago</p>
+          <p className="text-stone-600">Configure suas credenciais de forma segura no servidor</p>
         </div>
         
-        {credentials.isConfigured && (
+        {status.isConfigured && (
           <div className="flex items-center space-x-2">
+            <Server className="w-4 h-4 text-green-600" />
             <div className={`w-3 h-3 rounded-full ${
-              credentials.isValid ? 'bg-green-500' : 'bg-yellow-500'
+              status.isValid ? 'bg-green-500' : 'bg-yellow-500'
             }`}></div>
             <span className="text-sm text-stone-600">
-              {credentials.isValid ? 'Configurado e testado' : 'Configurado'}
+              {status.isValid ? 'Configurado e validado' : 'Configurado no servidor'}
             </span>
           </div>
         )}
@@ -200,15 +217,15 @@ export default function MercadoPagoSettings() {
 
       {/* Status Card */}
       <div className={`rounded-lg p-4 border-l-4 ${
-        credentials.isConfigured 
-          ? credentials.isValid 
+        status.isConfigured 
+          ? status.isValid 
             ? 'bg-green-50 border-green-400' 
             : 'bg-yellow-50 border-yellow-400'
           : 'bg-blue-50 border-blue-400'
       }`}>
         <div className="flex items-center space-x-2">
-          {credentials.isConfigured ? (
-            credentials.isValid ? (
+          {status.isConfigured ? (
+            status.isValid ? (
               <CheckCircle className="w-5 h-5 text-green-600" />
             ) : (
               <AlertCircle className="w-5 h-5 text-yellow-600" />
@@ -218,31 +235,57 @@ export default function MercadoPagoSettings() {
           )}
           <div>
             <p className={`font-medium ${
-              credentials.isConfigured 
-                ? credentials.isValid 
+              status.isConfigured 
+                ? status.isValid 
                   ? 'text-green-800' 
                   : 'text-yellow-800'
                 : 'text-blue-800'
             }`}>
-              {credentials.isConfigured 
-                ? credentials.isValid 
+              {status.isConfigured 
+                ? status.isValid 
                   ? 'Mercado Pago Configurado e Funcionando'
-                  : 'Mercado Pago Configurado - Teste Recomendado'
+                  : 'Mercado Pago Configurado - Validação Pendente'
                 : 'Mercado Pago Não Configurado'
               }
             </p>
             <p className={`text-sm ${
-              credentials.isConfigured 
-                ? credentials.isValid 
+              status.isConfigured 
+                ? status.isValid 
                   ? 'text-green-700' 
                   : 'text-yellow-700'
                 : 'text-blue-700'
             }`}>
-              {credentials.isConfigured 
-                ? `Ambiente: ${credentials.environment === 'sandbox' ? 'Teste (Sandbox)' : 'Produção'}`
+              {status.isConfigured 
+                ? `Ambiente: ${status.environment === 'sandbox' ? 'Teste (Sandbox)' : 'Produção'} • Armazenado no servidor`
                 : 'Configure suas credenciais para habilitar pagamentos PIX'
               }
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Vantagens do Backend Seguro */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+        <h4 className="font-semibold text-sage-600 mb-3 flex items-center">
+          <Shield className="w-5 h-5 mr-2" />
+          Vantagens do Backend Seguro:
+        </h4>
+        <div className="grid md:grid-cols-2 gap-4 text-sm text-stone-700">
+          <div className="flex items-start space-x-2">
+            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>Credenciais criptografadas no servidor</span>
+          </div>
+          <div className="flex items-start space-x-2">
+            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>Não expostas no navegador</span>
+          </div>
+          <div className="flex items-start space-x-2">
+            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>API proxy para Mercado Pago</span>
+          </div>
+          <div className="flex items-start space-x-2">
+            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+            <span>Validação automática</span>
           </div>
         </div>
       </div>
@@ -262,7 +305,7 @@ export default function MercadoPagoSettings() {
 
       {/* Formulário de Configuração */}
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <h4 className="font-semibold text-sage-600 mb-4">Configurar Credenciais</h4>
+        <h4 className="font-semibold text-sage-600 mb-4">Configurar Credenciais no Servidor</h4>
         
         <div className="space-y-4">
           {/* Ambiente */}
@@ -406,39 +449,39 @@ export default function MercadoPagoSettings() {
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                <span>Salvar Credenciais</span>
+                <span>Salvar no Servidor</span>
               </>
             )}
           </button>
 
-          {credentials.isConfigured && (
+          {status.isConfigured && (
             <button
               onClick={clearCredentials}
               className="flex items-center justify-center space-x-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
-              <span>Limpar</span>
+              <span>Limpar do Servidor</span>
             </button>
           )}
         </div>
 
         {/* Informações Adicionais */}
-        {credentials.lastTested && (
+        {status.lastTested && (
           <div className="mt-4 text-xs text-stone-500">
-            Última verificação: {new Date(credentials.lastTested).toLocaleString('pt-BR')}
+            Última verificação: {new Date(status.lastTested).toLocaleString('pt-BR')}
           </div>
         )}
       </div>
 
-      {/* Aviso de Segurança */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      {/* Informações de Segurança */}
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <div className="flex items-start space-x-2">
-          <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+          <Shield className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
           <div>
-            <h5 className="font-medium text-yellow-800">Importante - Segurança</h5>
-            <p className="text-sm text-yellow-700 mt-1">
-              Suas credenciais são armazenadas localmente no navegador. Para máxima segurança em produção, 
-              considere implementar um backend para gerenciar as credenciais de forma mais segura.
+            <h5 className="font-medium text-green-800">Segurança Aprimorada</h5>
+            <p className="text-sm text-green-700 mt-1">
+              Suas credenciais são criptografadas e armazenadas de forma segura no servidor backend. 
+              Elas nunca são expostas no navegador, garantindo máxima segurança para seus pagamentos.
             </p>
           </div>
         </div>

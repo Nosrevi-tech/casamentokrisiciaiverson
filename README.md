@@ -6,17 +6,27 @@ Este projeto é um site completo de casamento com integração nativa ao Mercado
 
 ## 🔧 Configuração do Mercado Pago
 
-### Método 1: Interface Administrativa (Recomendado)
+### Método 1: Backend Seguro (Recomendado)
 1. **Acesse o painel administrativo** do site
 2. **Vá na aba "Configurações MP"**
-3. **Configure suas credenciais** diretamente na interface
+3. **Configure suas credenciais** de forma segura no servidor
 4. **Teste a conexão** antes de usar
 
-### Método 2: Variáveis de Ambiente (Opcional)
-Se preferir usar variáveis de ambiente, crie um arquivo `.env`:
-```env
-VITE_MERCADO_PAGO_ACCESS_TOKEN=seu_access_token_aqui
-VITE_MERCADO_PAGO_PUBLIC_KEY=sua_public_key_aqui
+### Método 2: Iniciar Backend
+```bash
+# Instalar dependências do backend
+cd server
+npm install
+
+# Iniciar servidor backend
+npm run dev
+
+# Em outro terminal, iniciar frontend
+cd ..
+npm run dev
+
+# Ou iniciar ambos simultaneamente
+npm run dev:full
 ```
 
 ### Como Obter Credenciais
@@ -44,12 +54,13 @@ VITE_MERCADO_PAGO_PUBLIC_KEY=sua_public_key_aqui
 - ✅ Vinculação de produtos por ID
 
 ### 🔒 Segurança
-- ✅ IDs únicos para cada transação
-- ✅ Validação de dados do pagador
-- ✅ Validação de formato das credenciais
-- ✅ Webhook para notificações (configurável)
-- ✅ Armazenamento seguro das credenciais
-- ✅ Modo demonstração quando não configurado
+- ✅ **Backend seguro** com credenciais criptografadas
+- ✅ **Credenciais nunca expostas** no navegador
+- ✅ **API proxy** para Mercado Pago
+- ✅ **Validação automática** de credenciais
+- ✅ **IDs únicos** para cada transação
+- ✅ **Webhook** para notificações
+- ✅ **Modo demonstração** quando não configurado
 
 ### 📊 Painel Administrativo
 - ✅ Dashboard completo de pagamentos
@@ -124,8 +135,16 @@ src/
 
 ### 1. Configuração Inicial
 ```bash
+# Frontend
 npm install
-npm run dev
+
+# Backend
+cd server
+npm install
+cd ..
+
+# Iniciar ambos
+npm run dev:full
 ```
 
 ### 2. Configurar Mercado Pago
@@ -171,16 +190,38 @@ npm run dev
 ## 🔐 Segurança e Produção
 
 ### Recomendações de Segurança
-1. **Use HTTPS** em produção
-2. **Configure webhooks** para notificações
-3. **Monitore transações** regularmente
-4. **Use ambiente Sandbox** para testes
-5. **Mantenha credenciais seguras**
+1. **Configure ENCRYPTION_KEY** no servidor
+2. **Use HTTPS** em produção
+3. **Configure webhooks** para notificações
+4. **Monitore transações** regularmente
+5. **Use ambiente Sandbox** para testes
+6. **Backend seguro** com credenciais criptografadas
 
 ### Deploy em Produção
 ```bash
+# Frontend
 npm run build
-# Deploy da pasta dist/ para seu servidor
+
+# Backend
+cd server
+npm start
+
+# Configure variáveis de ambiente
+ENCRYPTION_KEY=sua_chave_muito_segura_de_32_caracteres
+PORT=3001
+NODE_ENV=production
+```
+
+### Estrutura de Arquivos
+```
+projeto/
+├── src/                     # Frontend React
+├── server/                  # Backend Node.js
+│   ├── index.js            # Servidor principal
+│   ├── package.json        # Dependências do backend
+│   └── credentials.enc     # Credenciais criptografadas
+├── package.json            # Dependências do frontend
+└── README.md
 ```
 
 ## 📞 Suporte
@@ -190,10 +231,11 @@ npm run build
 - Suporte: https://www.mercadopago.com.br/ajuda
 
 ### Sistema
-- Todas as funcionalidades estão integradas
-- Interface administrativa completa
-- Modo demonstração disponível
-- Documentação inline no código
+- **Backend seguro** implementado
+- **Interface administrativa** completa
+- **Credenciais criptografadas** no servidor
+- **API proxy** para Mercado Pago
+- **Modo demonstração** disponível
 
 ---
 
