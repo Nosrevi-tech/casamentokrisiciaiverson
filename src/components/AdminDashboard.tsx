@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ProductManager from './ProductManager';
 import CheckoutDashboard from './CheckoutDashboard';
 import PendingPayments from './PendingPayments';
+import MercadoPagoSettings from './MercadoPagoSettings';
 import { 
   Users, 
   Calendar, 
@@ -56,7 +57,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedEntry, setSelectedEntry] = useState<RSVPData | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<GiftMessage | null>(null);
-  const [activeTab, setActiveTab] = useState<'rsvp' | 'messages' | 'products' | 'checkout' | 'pending'>('rsvp');
+  const [activeTab, setActiveTab] = useState<'rsvp' | 'messages' | 'products' | 'checkout' | 'pending' | 'settings'>('rsvp');
 
   useEffect(() => {
     loadRSVPData();
@@ -279,6 +280,16 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 }`}
               >
                 Pagamentos Pendentes
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'settings'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
+                }`}
+              >
+                Configurações MP
               </button>
             </nav>
           </div>
@@ -558,6 +569,8 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         {activeTab === 'checkout' && <CheckoutDashboard />}
         
         {activeTab === 'pending' && <PendingPayments />}
+        
+        {activeTab === 'settings' && <MercadoPagoSettings />}
       </div>
 
       {/* Modal for viewing details */}

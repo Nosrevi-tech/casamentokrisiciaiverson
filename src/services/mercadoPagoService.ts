@@ -4,6 +4,7 @@ interface PaymentData {
   payerEmail: string;
   payerName: string;
   externalReference: string;
+  productId?: number;
 }
 
 interface MercadoPagoResponse {
@@ -21,73 +22,116 @@ interface MercadoPagoResponse {
   };
 }
 
-interface CreatePaymentResponse extends MercadoPagoResponse {
-  external_reference: string;
-  date_created: string;
-  payer: {
-    email: string;
-    first_name: string;
-    last_name: string;
-  };
-  transaction_amount: number;
-  description: string;
+interface MercadoPagoCredentials {
+  accessToken: string;
+  publicKey: string;
+  environment: 'sandbox' | 'production';
+  isConfigured: boolean;
+  isValid?: boolean;
 }
 
 class MercadoPagoService {
-  private accessToken: string;
-  private baseUrl = '/api/mercadopago';
+  private credentials: MercadoPagoCredentials | null = null;
 
   constructor() {
-    this.accessToken = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN || '';
+    this.loadCredentials();
     
-    if (!this.accessToken) {
-      console.warn('Mercado Pago access token não configurado. Usando modo de demonstração.');
+    // Escutar mudanças nas credenciais
+    window.addEventListener('mercadoPagoCredentialsUpdated', () => {
+      this.loadCredentials();
+    });
+  }
+
+  private loadCredentials() {
+    try {
+      const saved = localStorage.getItem('mercadoPagoCredentials');
+      if (saved) {
+        this.credentials = JSON.parse(saved);
+      } else {
+        // Fallback para variáveis de ambiente (compatibilidade)
+        const envToken = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
+        const envPublicKey = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY;
+        
+        if (envToken && envPublicKey) {
+          this.credentials = {
+            accessToken: envToken,
+            publicKey: envPublicKey,
+            environment: envToken.startsWith('TEST-') ? 'sandbox' : 'production',
+            isConfigured: true,
+            isValid: true
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar credenciais do Mercado Pago:', error);
+      this.credentials = null;
     }
+  }
+
+  private getApiUrl(): string {
+    if (!this.credentials) return 'https://api.mercadopago.com';
+    
+    return this.credentials.environment === 'sandbox' 
+      ? 'https://api.mercadopago.com'
+      : 'https://api.mercadopago.com';
+  }
+
+  private isConfigured(): boolean {
+    return !!(this.credentials?.isConfigured && this.credentials?.accessToken);
   }
 
   async createPixPayment(paymentData: PaymentData): Promise<MercadoPagoResponse> {
     try {
-      // Se não tiver token configurado, retorna dados simulados
-      if (!this.accessToken || this.accessToken === 'your_access_token_here') {
+      // Verificar se está configurado
+      if (!this.isConfigured()) {
+        console.warn('Mercado Pago não configurado. Usando modo de demonstração.');
         const mockPayment = this.createMockPayment(paymentData);
         this.savePaymentToStorage(mockPayment, paymentData);
         return mockPayment;
       }
 
-      const response = await fetch(`${this.baseUrl}/v1/payments`, {
+      const apiUrl = this.getApiUrl();
+      
+      const requestBody = {
+        transaction_amount: paymentData.amount,
+        description: paymentData.description,
+        payment_method_id: 'pix',
+        payer: {
+          email: paymentData.payerEmail,
+          first_name: paymentData.payerName.split(' ')[0],
+          last_name: paymentData.payerName.split(' ').slice(1).join(' ') || 'Silva'
+        },
+        external_reference: paymentData.externalReference,
+        notification_url: `${window.location.origin}/webhook/mercadopago`,
+        metadata: {
+          wedding_gift: true,
+          couple_names: 'Kriscia e Iverson',
+          product_id: paymentData.productId?.toString() || 'multiple'
+        }
+      };
+
+      const response = await fetch(`${apiUrl}/v1/payments`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
+          'Authorization': `Bearer ${this.credentials!.accessToken}`,
           'Content-Type': 'application/json',
           'X-Idempotency-Key': paymentData.externalReference
         },
-        body: JSON.stringify({
-          transaction_amount: paymentData.amount,
-          description: paymentData.description,
-          payment_method_id: 'pix',
-          payer: {
-            email: paymentData.payerEmail,
-            first_name: paymentData.payerName.split(' ')[0],
-            last_name: paymentData.payerName.split(' ').slice(1).join(' ') || 'Silva'
-          },
-          external_reference: paymentData.externalReference,
-          notification_url: `${window.location.origin}/webhook/mercadopago`,
-          metadata: {
-            wedding_gift: true,
-            couple_names: 'Kriscia e Iverson'
-          }
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
-        throw new Error(`Erro na API do Mercado Pago: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`Erro na API do Mercado Pago: ${response.status} - ${errorData.message || response.statusText}`);
       }
 
       const data = await response.json();
       this.savePaymentToStorage(data, paymentData);
       return data;
+      
     } catch (error) {
       console.error('Erro ao criar pagamento PIX:', error);
+      
       // Em caso de erro, retorna dados simulados para demonstração
       const mockPayment = this.createMockPayment(paymentData);
       this.savePaymentToStorage(mockPayment, paymentData);
@@ -96,7 +140,6 @@ class MercadoPagoService {
   }
 
   private savePaymentToStorage(paymentResponse: MercadoPagoResponse, paymentData: PaymentData) {
-    // Salvar pagamento no localStorage para o dashboard
     const payment = {
       id: paymentResponse.id,
       status: 'pending',
@@ -107,8 +150,10 @@ class MercadoPagoService {
       externalReference: paymentData.externalReference,
       createdAt: new Date().toISOString(),
       pixCode: paymentResponse.qr_code || paymentResponse.point_of_interaction?.transaction_data?.qr_code || '',
-      gifts: [], // Será preenchido pelo componente que chama
-      messageInfo: {} // Será preenchido pelo componente que chama
+      productId: paymentData.productId,
+      environment: this.credentials?.environment || 'demo',
+      gifts: [],
+      messageInfo: {}
     };
 
     const existingPayments = JSON.parse(localStorage.getItem('mercadoPagoPayments') || '[]');
@@ -117,14 +162,13 @@ class MercadoPagoService {
   }
 
   private createMockPayment(paymentData: PaymentData): MercadoPagoResponse {
-    // Gera um QR Code PIX simulado para demonstração
     const pixCode = this.generateMockPixCode(paymentData);
     
     return {
       id: `MP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       status: 'pending',
       qr_code: pixCode,
-      qr_code_base64: '', // Será gerado pelo componente
+      qr_code_base64: '',
       ticket_url: '',
       point_of_interaction: {
         transaction_data: {
@@ -137,7 +181,6 @@ class MercadoPagoService {
   }
 
   private generateMockPixCode(paymentData: PaymentData): string {
-    // Gera um código PIX simulado seguindo o padrão EMV
     const merchantName = 'KRISCIA E IVERSON';
     const merchantCity = 'BARBACENA';
     const pixKey = 'iverson.paiva11@gmail.com';
@@ -149,17 +192,18 @@ class MercadoPagoService {
 
   async getPaymentStatus(paymentId: string): Promise<{ status: string; statusDetail: string }> {
     try {
-      if (!this.accessToken || this.accessToken === 'your_access_token_here') {
-        // Simula status para demonstração
+      if (!this.isConfigured()) {
         return {
           status: 'pending',
           statusDetail: 'pending_waiting_payment'
         };
       }
 
-      const response = await fetch(`${this.baseUrl}/v1/payments/${paymentId}`, {
+      const apiUrl = this.getApiUrl();
+      
+      const response = await fetch(`${apiUrl}/v1/payments/${paymentId}`, {
         headers: {
-          'Authorization': `Bearer ${this.accessToken}`,
+          'Authorization': `Bearer ${this.credentials!.accessToken}`,
           'Content-Type': 'application/json'
         }
       });
@@ -178,6 +222,55 @@ class MercadoPagoService {
       return {
         status: 'pending',
         statusDetail: 'pending_waiting_payment'
+      };
+    }
+  }
+
+  // Método para verificar se as credenciais estão configuradas
+  getCredentialsStatus(): {
+    isConfigured: boolean;
+    environment: string;
+    isValid: boolean;
+  } {
+    return {
+      isConfigured: this.isConfigured(),
+      environment: this.credentials?.environment || 'demo',
+      isValid: this.credentials?.isValid || false
+    };
+  }
+
+  // Método para testar a conexão com a API
+  async testConnection(): Promise<{ success: boolean; message: string }> {
+    try {
+      if (!this.isConfigured()) {
+        return {
+          success: false,
+          message: 'Credenciais não configuradas'
+        };
+      }
+
+      const apiUrl = this.getApiUrl();
+      
+      const response = await fetch(`${apiUrl}/v1/account/settings`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.credentials!.accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: `Conexão bem-sucedida com ambiente ${this.credentials!.environment}`
+        };
+      } else {
+        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: `Erro na conexão: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
       };
     }
   }
