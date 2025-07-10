@@ -12,7 +12,21 @@ export default function Hero() {
     'https://images.pexels.com/photos/1729931/pexels-photo-1729931.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
     'https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
     'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024966/pexels-photo-1024966.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'
+    'https://images.pexels.com/photos/1024966/pexels-photo-1024966.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024967/pexels-photo-1024967.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024968/pexels-photo-1024968.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1729932/pexels-photo-1729932.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1616114/pexels-photo-1616114.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1444443/pexels-photo-1444443.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024994/pexels-photo-1024994.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1729933/pexels-photo-1729933.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1616115/pexels-photo-1616115.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1444444/pexels-photo-1444444.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024995/pexels-photo-1024995.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1729934/pexels-photo-1729934.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1616116/pexels-photo-1616116.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1444445/pexels-photo-1444445.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024996/pexels-photo-1024996.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'
   ];
 
   // Usar fotos personalizadas se disponíveis, senão usar as padrão
@@ -60,7 +74,7 @@ export default function Hero() {
           <div
             key={index}
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
-              index === currentImageIndex ? 'opacity-15' : 'opacity-0'
+              index === currentImageIndex ? 'opacity-40' : 'opacity-0'
             }`}
             style={{
               backgroundImage: `url('${image}')`
@@ -70,7 +84,7 @@ export default function Hero() {
       </div>
       
       {/* Overlay gradiente para melhor legibilidade */}
-      <div className="absolute inset-0 bg-gradient-to-br from-rose-50/80 to-rose-100/80"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-rose-50/60 to-rose-100/60"></div>
       
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
