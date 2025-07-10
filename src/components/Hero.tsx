@@ -74,7 +74,7 @@ export default function Hero() {
           <div
             key={index}
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
-              index === currentImageIndex ? 'opacity-40' : 'opacity-0'
+              index === currentImageIndex ? 'opacity-60' : 'opacity-0'
             }`}
             style={{
               backgroundImage: `url('${image}')`
