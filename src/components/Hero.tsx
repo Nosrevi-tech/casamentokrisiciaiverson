@@ -7,7 +7,7 @@ export default function Hero() {
   
   // Array de imagens de casamento do Pexels
   const defaultImages = [
-    'https://photos.app.goo.gl/V7nzfX53daebFttS9',
+    'https://photos.google.com/share/AF1QipMQZSYn7a75Y3MfCUYz21AG6zVy52_Ao9CuUMBMzs_Bou2nlrzkuagGIR6zsWnooQ?key=VGVBSXlRdno1Wi14ellzbkNtSG81MXdyLVp4Qi1n',
     'https://photos.app.goo.gl/4LbJZAHxLrcTH74cA',
     'https://photos.app.goo.gl/kRYs9WKry9UDuk9AA',
     'https://photos.app.goo.gl/ajKkUkVjmsJcoiX5A',
