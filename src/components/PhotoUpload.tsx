@@ -77,15 +77,15 @@ export default function PhotoUpload() {
 
 
   const handleFiles = async (files: File[]) => {
-    // Verificar se não excede o limite de 20 fotos/   
-    if (photos.length + files.length > 20) {
+    // Verificar se não excede o limite de 20 fotos/    if (photos.length + files.length > 20) {
       alert(`Você pode ter no máximo 20 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${20 - photos.length} fotos.`);
       return;
     }
     
     const validFiles = files.filter(file => {
-      const isImage = file.type.startsWith('image/');
+      const isImage = file.type.startsWith(\'image/\');
       const isValidSize = file.size <= 30 * 1024 * 1024; // 10MB editei de 10 para 30
+      console.log(`File: ${file.name}, isImage: ${isImage}, isValidSize: ${isValidSize}`);
       return isImage && isValidSize;
     });
 
@@ -102,12 +102,10 @@ export default function PhotoUpload() {
       const file = validFiles[i];
       
       try {
-        const url = await convertFileToBase64(file);
-        
         const newPhoto: UploadedPhoto = {
           id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
           name: file.name,
-          url: url,
+          url: URL.createObjectURL(file), // Usar URL.createObjectURL para exibição temporária
           size: file.size,
           uploadedAt: new Date().toISOString(),
           isActive: true
@@ -126,14 +124,7 @@ export default function PhotoUpload() {
     setUploadProgress(0);
   }; 
 
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
-    });
-  };
+
 
   const deletePhoto = (photoId: string) => {
     if (confirm('Tem certeza que deseja excluir esta foto?')) {
