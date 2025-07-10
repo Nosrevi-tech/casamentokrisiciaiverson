@@ -2,9 +2,47 @@ import React from 'react';
 import { Calendar, MapPin } from 'lucide-react';
 
 export default function Hero() {
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+  
+  // Array de imagens de casamento do Pexels
+  const backgroundImages = [
+    'https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1729931/pexels-photo-1729931.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
+    'https://images.pexels.com/photos/1024966/pexels-photo-1024966.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'
+  ];
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % backgroundImages.length
+      );
+    }, 5000); // Muda a cada 5 segundos
+
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
+
   return (
     <section id="inicio" className="min-h-screen bg-gradient-to-br from-rose-50 to-rose-100 flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop')] bg-cover bg-center opacity-10"></div>
+      {/* Slideshow de Imagens de Fundo */}
+      <div className="absolute inset-0">
+        {backgroundImages.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
+              index === currentImageIndex ? 'opacity-15' : 'opacity-0'
+            }`}
+            style={{
+              backgroundImage: `url('${image}')`
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Overlay gradiente para melhor legibilidade */}
+      <div className="absolute inset-0 bg-gradient-to-br from-rose-50/80 to-rose-100/80"></div>
       
       <div className="container mx-auto px-4 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
@@ -31,6 +69,22 @@ export default function Hero() {
           <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-rose-200">
             <h2 className="text-3xl font-serif text-sage-600 mb-4">Contagem Regressiva</h2>
             <CountdownTimer />
+          </div>
+          
+          {/* Indicadores do Slideshow */}
+          <div className="flex justify-center space-x-2 mt-8">
+            {backgroundImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImageIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentImageIndex 
+                    ? 'bg-primary-500 scale-125' 
+                    : 'bg-white/50 hover:bg-white/70'
+                }`}
+                aria-label={`Ir para imagem ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </div>
