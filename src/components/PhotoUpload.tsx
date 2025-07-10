@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Upload, 
-  X, 
-  Image as ImageIcon, 
-  Trash2, 
-  Eye, 
+import {
+  Upload,
+  X,
+  Image as ImageIcon,
+  Trash2,
+  Eye,
   Plus,
   Download,
   RotateCcw,
@@ -42,10 +42,9 @@ export default function PhotoUpload() {
   const savePhotos = (photoList: UploadedPhoto[]) => {
     localStorage.setItem('weddingPhotos', JSON.stringify(photoList));
     setPhotos(photoList);
-    
     // Notificar outros componentes sobre a mudança
-    window.dispatchEvent(new CustomEvent('photosUpdated', { 
-      detail: { photos: photoList } 
+    window.dispatchEvent(new CustomEvent('photosUpdated', {
+      detail: { photos: photoList }
     }));
   };
 
@@ -63,7 +62,6 @@ export default function PhotoUpload() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFiles(Array.from(e.dataTransfer.files));
     }
@@ -74,67 +72,18 @@ export default function PhotoUpload() {
       handleFiles(Array.from(e.target.files));
     }
   };
-const handleFiles = async (files: File[]) => {
-  const currentPhotos = [...photos]; // cópia local
-  const remainingSlots = 20 - currentPhotos.length;
 
-  if (files.length > remainingSlots) {
-    alert(`Você pode adicionar no máximo ${remainingSlots} fotos.`);
-    return;
-  }
-
-  const validFiles = files.filter(file => {
-    const isImage = file.type.startsWith('image/');
-    const isValidSize = file.size <= 30 * 1024 * 1024;
-    return isImage && isValidSize;
-  });
-
-  if (validFiles.length === 0) {
-    alert('Por favor, selecione apenas imagens válidas (máximo 30MB cada).');
-    return;
-  }
-
-  setIsUploading(true);
-  setUploadProgress(0);
-
-  const newPhotos: UploadedPhoto[] = [];
-
-  for (let i = 0; i < validFiles.length; i++) {
-    const file = validFiles[i];
-
-    try {
-      const url = await convertFileToBase64(file);
-      const newPhoto: UploadedPhoto = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        name: file.name,
-        url: url,
-        size: file.size,
-        uploadedAt: new Date().toISOString(),
-        isActive: true,
-      };
-      newPhotos.push(newPhoto);
-      setUploadProgress(((i + 1) / validFiles.length) * 100);
-    } catch (error) {
-      console.error('Erro ao processar arquivo:', error);
-    }
-  }
-
-  const updatedPhotos = [...currentPhotos, ...newPhotos];
-  savePhotos(updatedPhotos);
-
-  setIsUploading(false);
-  setUploadProgress(0);
-};
-
-/*  const handleFiles = async (files: File[]) => {
-    // Verificar se não excede o limite de 20 fotos/    if (photos.length + files.length > 20) {
+  // FUNÇÃO CORRIGIDA - Esta é a principal mudança
+  const handleFiles = async (files: File[]) => {
+    // Verificar se não excede o limite de 20 fotos
+    if (photos.length + files.length > 20) {
       alert(`Você pode ter no máximo 20 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${20 - photos.length} fotos.`);
       return;
     }
-    
+
     const validFiles = files.filter(file => {
       const isImage = file.type.startsWith('image/');
-      const isValidSize = file.size <= 30 * 1024 * 1024; // 10MB editei de 10 para 30
+      const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB
       return isImage && isValidSize;
     });
 
@@ -146,33 +95,43 @@ const handleFiles = async (files: File[]) => {
     setIsUploading(true);
     setUploadProgress(0);
 
+    // Criar um array para armazenar todas as novas fotos
+    const newPhotos: UploadedPhoto[] = [];
+
+    // Processar todos os arquivos e criar objetos de foto
     for (let i = 0; i < validFiles.length; i++) {
       const file = validFiles[i];
-      
       try {
         const url = await convertFileToBase64(file);
-        
         const newPhoto: UploadedPhoto = {
-          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9) + i, // Adicionado 'i' para garantir IDs únicos
           name: file.name,
           url: url,
           size: file.size,
           uploadedAt: new Date().toISOString(),
           isActive: true
         };
-
-        const updatedPhotos = [...photos, newPhoto];
-        savePhotos(updatedPhotos);
         
+        newPhotos.push(newPhoto);
         setUploadProgress(((i + 1) / validFiles.length) * 100);
       } catch (error) {
         console.error('Erro ao processar arquivo:', error);
       }
     }
 
+    // Atualizar o estado apenas uma vez com todas as fotos
+    const updatedPhotos = [...photos, ...newPhotos];
+    savePhotos(updatedPhotos);
+
     setIsUploading(false);
     setUploadProgress(0);
-  }; */
+    
+    // Limpar o input para permitir selecionar os mesmos arquivos novamente se necessário
+    const fileInput = document.getElementById('photo-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
 
   const convertFileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -191,8 +150,8 @@ const handleFiles = async (files: File[]) => {
   };
 
   const togglePhotoStatus = (photoId: string) => {
-    const updatedPhotos = photos.map(photo => 
-      photo.id === photoId 
+    const updatedPhotos = photos.map(photo =>
+      photo.id === photoId
         ? { ...photo, isActive: !photo.isActive }
         : photo
     );
@@ -210,16 +169,13 @@ const handleFiles = async (files: File[]) => {
   const exportPhotos = () => {
     const activePhotos = photos.filter(photo => photo.isActive);
     const photoUrls = activePhotos.map(photo => photo.url);
-    
     const dataStr = JSON.stringify(photoUrls, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
     link.download = 'fotos-casamento.json';
     link.click();
-    
     URL.revokeObjectURL(url);
   };
 
@@ -227,8 +183,8 @@ const handleFiles = async (files: File[]) => {
     if (confirm('Tem certeza que deseja remover todas as fotos personalizadas e voltar às imagens padrão?')) {
       localStorage.removeItem('weddingPhotos');
       setPhotos([]);
-      window.dispatchEvent(new CustomEvent('photosUpdated', { 
-        detail: { photos: [] } 
+      window.dispatchEvent(new CustomEvent('photosUpdated', {
+        detail: { photos: [] }
       }));
     }
   };
@@ -298,8 +254,8 @@ const handleFiles = async (files: File[]) => {
           <div className="flex items-center space-x-2">
             <AlertCircle className="w-5 h-5 text-orange-600" />
             <div>
-              <p className="text-sm text-stone-600">Limite por Foto</p>
-              <p className="text-xl font-bold text-sage-600">20 fotos</p>
+              <p className="text-sm text-stone-600">Disponível</p>
+              <p className="text-xl font-bold text-sage-600">{20 - photos.length} fotos</p>
             </div>
           </div>
         </div>
@@ -308,8 +264,8 @@ const handleFiles = async (files: File[]) => {
       {/* Área de Upload */}
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-          dragActive 
-            ? 'border-primary-500 bg-primary-50' 
+          dragActive
+            ? 'border-primary-500 bg-primary-50'
             : 'border-stone-300 hover:border-primary-400'
         }`}
         onDragEnter={handleDrag}
@@ -323,7 +279,6 @@ const handleFiles = async (files: File[]) => {
               <Upload className="w-8 h-8 text-primary-600" />
             </div>
           </div>
-          
           <div>
             <h4 className="text-lg font-semibold text-sage-600 mb-2">
               Faça upload das suas fotos
@@ -331,7 +286,6 @@ const handleFiles = async (files: File[]) => {
             <p className="text-stone-600 mb-4">
               Arraste e solte suas imagens aqui ou clique para selecionar
             </p>
-            
             <input
               type="file"
               multiple
@@ -339,21 +293,24 @@ const handleFiles = async (files: File[]) => {
               onChange={handleFileInput}
               className="hidden"
               id="photo-upload"
+              disabled={photos.length >= 20}
             />
-            
             <label
               htmlFor="photo-upload"
-              className="inline-flex items-center space-x-2 bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors cursor-pointer"
+              className={`inline-flex items-center space-x-2 px-6 py-3 rounded-lg transition-colors cursor-pointer ${
+                photos.length >= 20
+                  ? 'bg-stone-400 text-white cursor-not-allowed'
+                  : 'bg-primary-500 text-white hover:bg-primary-600'
+              }`}
             >
               <Plus className="w-5 h-5" />
-              <span>Selecionar Fotos</span>
+              <span>{photos.length >= 20 ? 'Limite Atingido' : 'Selecionar Fotos'}</span>
             </label>
           </div>
-          
           <div className="text-sm text-stone-500">
             <p>Formatos aceitos: JPG, PNG, GIF, WebP</p>
             <p>Tamanho máximo: 10MB por foto • Limite: 20 fotos</p>
-            <p>Fotos atuais: {photos.length}/20</p>
+            <p>Fotos atuais: {photos.length}/20 • Disponível: {20 - photos.length}</p>
           </div>
         </div>
       </div>
@@ -366,7 +323,7 @@ const handleFiles = async (files: File[]) => {
             <span className="text-sm text-stone-500">{Math.round(uploadProgress)}%</span>
           </div>
           <div className="w-full bg-stone-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-primary-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${uploadProgress}%` }}
             ></div>
@@ -377,8 +334,7 @@ const handleFiles = async (files: File[]) => {
       {/* Grid de Fotos */}
       {photos.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h4 className="text-lg font-semibold text-sage-600 mb-4">Suas Fotos</h4>
-          
+          <h4 className="text-lg font-semibold text-sage-600 mb-4">Suas Fotos ({photos.length}/20)</h4>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {photos.map((photo) => (
               <div key={photo.id} className="relative group">
@@ -390,7 +346,6 @@ const handleFiles = async (files: File[]) => {
                     alt={photo.name}
                     className="w-full h-32 object-cover"
                   />
-                  
                   {/* Overlay com ações */}
                   <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
                     <button
@@ -400,19 +355,17 @@ const handleFiles = async (files: File[]) => {
                     >
                       <Eye className="w-4 h-4" />
                     </button>
-                    
                     <button
                       onClick={() => togglePhotoStatus(photo.id)}
                       className={`p-2 rounded-full transition-colors ${
-                        photo.isActive 
-                          ? 'bg-green-500 text-white hover:bg-green-600' 
+                        photo.isActive
+                          ? 'bg-green-500 text-white hover:bg-green-600'
                           : 'bg-stone-500 text-white hover:bg-stone-600'
                       }`}
                       title={photo.isActive ? 'Desativar' : 'Ativar'}
                     >
                       <Check className="w-4 h-4" />
                     </button>
-                    
                     <button
                       onClick={() => deletePhoto(photo.id)}
                       className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
@@ -421,13 +374,11 @@ const handleFiles = async (files: File[]) => {
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                  
                   {/* Indicador de status */}
                   <div className={`absolute top-2 right-2 w-3 h-3 rounded-full ${
                     photo.isActive ? 'bg-green-500' : 'bg-stone-400'
                   }`}></div>
                 </div>
-                
                 <div className="mt-2">
                   <p className="text-sm font-medium text-sage-600 truncate" title={photo.name}>
                     {photo.name}
@@ -450,7 +401,7 @@ const handleFiles = async (files: File[]) => {
               <div>
                 <h3 className="text-lg font-semibold text-sage-600">{selectedPhoto.name}</h3>
                 <p className="text-sm text-stone-500">
-                  {formatFileSize(selectedPhoto.size)} • 
+                  {formatFileSize(selectedPhoto.size)} •
                   Enviado em {new Date(selectedPhoto.uploadedAt).toLocaleDateString('pt-BR')}
                 </p>
               </div>
@@ -461,7 +412,6 @@ const handleFiles = async (files: File[]) => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
             <div className="p-4">
               <img
                 src={selectedPhoto.url}
@@ -469,30 +419,27 @@ const handleFiles = async (files: File[]) => {
                 className="w-full max-h-[60vh] object-contain rounded-lg"
               />
             </div>
-            
             <div className="p-4 border-t border-stone-200 flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
-                  selectedPhoto.isActive 
-                    ? 'bg-green-100 text-green-800' 
+                  selectedPhoto.isActive
+                    ? 'bg-green-100 text-green-800'
                     : 'bg-stone-100 text-stone-800'
                 }`}>
                   {selectedPhoto.isActive ? 'Ativa no Slideshow' : 'Inativa'}
                 </span>
               </div>
-              
               <div className="flex space-x-2">
                 <button
                   onClick={() => togglePhotoStatus(selectedPhoto.id)}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    selectedPhoto.isActive 
-                      ? 'bg-stone-500 text-white hover:bg-stone-600' 
+                    selectedPhoto.isActive
+                      ? 'bg-stone-500 text-white hover:bg-stone-600'
                       : 'bg-green-500 text-white hover:bg-green-600'
                   }`}
                 >
                   {selectedPhoto.isActive ? 'Desativar' : 'Ativar'}
                 </button>
-                
                 <button
                   onClick={() => {
                     deletePhoto(selectedPhoto.id);
