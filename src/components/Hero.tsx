@@ -12,21 +12,7 @@ export default function Hero() {
     'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
     'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
     'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg'
+   
   ];
 
   // Usar fotos personalizadas se disponíveis, senão usar as padrão
