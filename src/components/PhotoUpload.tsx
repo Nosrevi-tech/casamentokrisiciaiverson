@@ -74,17 +74,67 @@ export default function PhotoUpload() {
       handleFiles(Array.from(e.target.files));
     }
   };
+const handleFiles = async (files: File[]) => {
+  const currentPhotos = [...photos]; // cópia local
+  const remainingSlots = 20 - currentPhotos.length;
 
-  const handleFiles = async (files: File[]) => {
-    // Verificar se não excede o limite de 20 fotos
-    if (photos.length + files.length > 20) {
+  if (files.length > remainingSlots) {
+    alert(`Você pode adicionar no máximo ${remainingSlots} fotos.`);
+    return;
+  }
+
+  const validFiles = files.filter(file => {
+    const isImage = file.type.startsWith('image/');
+    const isValidSize = file.size <= 30 * 1024 * 1024;
+    return isImage && isValidSize;
+  });
+
+  if (validFiles.length === 0) {
+    alert('Por favor, selecione apenas imagens válidas (máximo 30MB cada).');
+    return;
+  }
+
+  setIsUploading(true);
+  setUploadProgress(0);
+
+  const newPhotos: UploadedPhoto[] = [];
+
+  for (let i = 0; i < validFiles.length; i++) {
+    const file = validFiles[i];
+
+    try {
+      const url = await convertFileToBase64(file);
+      const newPhoto: UploadedPhoto = {
+        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        name: file.name,
+        url: url,
+        size: file.size,
+        uploadedAt: new Date().toISOString(),
+        isActive: true,
+      };
+      newPhotos.push(newPhoto);
+      setUploadProgress(((i + 1) / validFiles.length) * 100);
+    } catch (error) {
+      console.error('Erro ao processar arquivo:', error);
+    }
+  }
+
+  const updatedPhotos = [...currentPhotos, ...newPhotos];
+  savePhotos(updatedPhotos);
+
+  setIsUploading(false);
+  setUploadProgress(0);
+};
+
+/*  const handleFiles = async (files: File[]) => {
+    // Verificar se não excede o limite de 20 fotos/    if (photos.length + files.length > 20) {
       alert(`Você pode ter no máximo 20 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${20 - photos.length} fotos.`);
       return;
     }
     
     const validFiles = files.filter(file => {
       const isImage = file.type.startsWith('image/');
-      const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB
+      const isValidSize = file.size <= 30 * 1024 * 1024; // 10MB editei de 10 para 30
       return isImage && isValidSize;
     });
 
@@ -122,7 +172,7 @@ export default function PhotoUpload() {
 
     setIsUploading(false);
     setUploadProgress(0);
-  };
+  }; */
 
   const convertFileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
