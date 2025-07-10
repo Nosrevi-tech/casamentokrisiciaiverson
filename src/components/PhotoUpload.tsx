@@ -77,8 +77,7 @@ export default function PhotoUpload() {
 
 
   const handleFiles = async (files: File[]) => {
-    // Verificar se não excede o limite de 20 fotos/    
-    if (photos.length + files.length > 20) {
+    // Verificar se não excede o limite de 20 fotos/    if (photos.length + files.length > 20) {
       alert(`Você pode ter no máximo 20 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${20 - photos.length} fotos.`);
       return;
     }
