@@ -8,9 +8,11 @@ export default function Hero() {
   
   // Array de imagens de casamento - caminhos corretos para pasta public
   const defaultImages = [
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-110.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-110.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-112.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-113.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-114.jpg',
   ];
 
   // Função para carregar todas as imagens da pasta dinamicamente
@@ -20,7 +22,15 @@ export default function Hero() {
       const possibleImages = [
         'Casamento civil Kriss e Iverson-110.jpg',
         'Casamento civil Kriss e Iverson-111.jpg',
-       
+        'Casamento civil Kriss e Iverson-112.jpg',
+        'Casamento civil Kriss e Iverson-113.jpg',
+        'Casamento civil Kriss e Iverson-114.jpg',
+        'Casamento civil Kriss e Iverson-115.jpg',
+        'Casamento civil Kriss e Iverson-116.jpg',
+        'Casamento civil Kriss e Iverson-117.jpg',
+        'Casamento civil Kriss e Iverson-118.jpg',
+        'Casamento civil Kriss e Iverson-119.jpg',
+        'Casamento civil Kriss e Iverson-120.jpg',
       ];
 
       const validImages: string[] = [];
@@ -156,7 +166,7 @@ export default function Hero() {
           {/* Indicadores do Slideshow */}
           {backgroundImages.length > 1 && (
             <div className="flex justify-center space-x-2 mt-8">
-              {backgroundImages.map((_, index) => (
+              {backgroundImages.slice(0, 4).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
