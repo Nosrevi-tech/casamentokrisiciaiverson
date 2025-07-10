@@ -3,9 +3,10 @@ import { Calendar, MapPin } from 'lucide-react';
 
 export default function Hero() {
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+  const [customPhotos, setCustomPhotos] = React.useState<string[]>([]);
   
   // Array de imagens de casamento do Pexels
-  const backgroundImages = [
+  const defaultImages = [
     'https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
     'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
     'https://images.pexels.com/photos/1729931/pexels-photo-1729931.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
@@ -13,6 +14,33 @@ export default function Hero() {
     'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
     'https://images.pexels.com/photos/1024966/pexels-photo-1024966.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'
   ];
+
+  // Usar fotos personalizadas se disponíveis, senão usar as padrão
+  const backgroundImages = customPhotos.length > 0 ? customPhotos : defaultImages;
+
+  React.useEffect(() => {
+    // Carregar fotos personalizadas do localStorage
+    const loadCustomPhotos = () => {
+      const savedPhotos = localStorage.getItem('weddingPhotos');
+      if (savedPhotos) {
+        const photos = JSON.parse(savedPhotos);
+        const activePhotos = photos
+          .filter((photo: any) => photo.isActive)
+          .map((photo: any) => photo.url);
+        setCustomPhotos(activePhotos);
+      }
+    };
+
+    loadCustomPhotos();
+
+    // Escutar mudanças nas fotos
+    const handlePhotosUpdate = () => {
+      loadCustomPhotos();
+    };
+
+    window.addEventListener('photosUpdated', handlePhotosUpdate);
+    return () => window.removeEventListener('photosUpdated', handlePhotosUpdate);
+  }, []);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -86,6 +114,15 @@ export default function Hero() {
               />
             ))}
           </div>
+          
+          {/* Indicador de fotos personalizadas */}
+          {customPhotos.length > 0 && (
+            <div className="mt-4">
+              <span className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800">
+                ✨ Usando suas fotos personalizadas ({customPhotos.length})
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </section>
