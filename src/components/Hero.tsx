@@ -7,26 +7,26 @@ export default function Hero() {
   
   // Array de imagens de casamento do Pexels
   const defaultImages = [
-    'https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1729931/pexels-photo-1729931.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1616113/pexels-photo-1616113.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024966/pexels-photo-1024966.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024967/pexels-photo-1024967.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024968/pexels-photo-1024968.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1729932/pexels-photo-1729932.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1616114/pexels-photo-1616114.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1444443/pexels-photo-1444443.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024994/pexels-photo-1024994.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1729933/pexels-photo-1729933.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1616115/pexels-photo-1616115.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1444444/pexels-photo-1444444.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024995/pexels-photo-1024995.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1729934/pexels-photo-1729934.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1616116/pexels-photo-1616116.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1444445/pexels-photo-1444445.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
-    'https://images.pexels.com/photos/1024996/pexels-photo-1024996.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'
+    'https://photos.app.goo.gl/V7nzfX53daebFttS9',
+    'https://photos.app.goo.gl/4LbJZAHxLrcTH74cA',
+    'https://photos.app.goo.gl/kRYs9WKry9UDuk9AA',
+    'https://photos.app.goo.gl/ajKkUkVjmsJcoiX5A',
+    'https://photos.app.goo.gl/9D69aDYoUH6sy5WB8',
+    'https://photos.app.goo.gl/Hs8FsybRJJcfjdTXA',
+    'https://photos.app.goo.gl/3zuUw5Wv9YykNkjV7',
+    'https://photos.app.goo.gl/jE4utqAYxJsEW1tm7',
+    'https://photos.app.goo.gl/cvwSse4nrtCYS9Cj8',
+    'https://photos.app.goo.gl/hdc3vUejWZChB3Nt8',
+    'https://photos.app.goo.gl/g5StbnogWS8AxZZQ6',
+    'https://photos.app.goo.gl/o886zFK6NGAQrEfc8',
+    'https://photos.app.goo.gl/hD8CaQmd5Qj3ZDe38',
+    'https://photos.app.goo.gl/6LpdALAgHd9gawcd7',
+    'https://photos.app.goo.gl/ZcqhLiVKwoF2KCvC8',
+    'https://photos.app.goo.gl/8WKQ4uk3AmPx3FJS6',
+    'https://photos.app.goo.gl/K926b78wm1yfewuL7',
+    'https://photos.app.goo.gl/KtiR512kF7yRS1s16',
+    'https://photos.app.goo.gl/tgGRRSwkwDJTi4Jb7',
+    'https://photos.app.goo.gl/ngK2kHkaQgmovKJV9'
   ];
 
   // Usar fotos personalizadas se disponíveis, senão usar as padrão
