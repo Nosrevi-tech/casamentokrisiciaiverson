@@ -4,21 +4,70 @@ import { Calendar, MapPin } from 'lucide-react';
 export default function Hero() {
   const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
   const [customPhotos, setCustomPhotos] = React.useState<string[]>([]);
+  const [loadedImages, setLoadedImages] = React.useState<string[]>([]);
   
-  // Array de imagens de casamento do Pexels
+  // Array de imagens de casamento - caminhos corretos para pasta public
   const defaultImages = [
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-110.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-   
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-110.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-112.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-113.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-114.jpg',
   ];
 
-  // Usar fotos personalizadas se disponíveis, senão usar as padrão
-  const backgroundImages = customPhotos.length > 0 ? customPhotos : defaultImages;
+  // Função para carregar todas as imagens da pasta dinamicamente
+  const loadImagesFromFolder = async () => {
+    try {
+      // Lista de possíveis nomes de arquivos (você pode expandir esta lista)
+      const possibleImages = [
+        'Casamento civil Kriss e Iverson-110.jpg',
+        'Casamento civil Kriss e Iverson-111.jpg',
+        'Casamento civil Kriss e Iverson-112.jpg',
+        'Casamento civil Kriss e Iverson-113.jpg',
+        'Casamento civil Kriss e Iverson-114.jpg',
+        'Casamento civil Kriss e Iverson-115.jpg',
+        'Casamento civil Kriss e Iverson-116.jpg',
+        'Casamento civil Kriss e Iverson-117.jpg',
+        'Casamento civil Kriss e Iverson-118.jpg',
+        'Casamento civil Kriss e Iverson-119.jpg',
+        'Casamento civil Kriss e Iverson-120.jpg',
+      ];
+
+      const validImages: string[] = [];
+
+      // Verificar quais imagens existem
+      for (const imageName of possibleImages) {
+        const imagePath = `/iloveimg-compressed/${imageName}`;
+        try {
+          const response = await fetch(imagePath, { method: 'HEAD' });
+          if (response.ok) {
+            validImages.push(imagePath);
+          }
+        } catch (error) {
+          // Imagem não existe, continuar
+          console.log(`Imagem não encontrada: ${imagePath}`);
+        }
+      }
+
+      if (validImages.length > 0) {
+        setLoadedImages(validImages);
+      } else {
+        // Se nenhuma imagem for encontrada, usar as padrão
+        setLoadedImages(defaultImages);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar imagens:', error);
+      setLoadedImages(defaultImages);
+    }
+  };
+
+  // Usar fotos personalizadas se disponíveis, senão usar as carregadas da pasta
+  const backgroundImages = customPhotos.length > 0 ? customPhotos : loadedImages;
 
   React.useEffect(() => {
+    // Carregar imagens da pasta
+    loadImagesFromFolder();
+
     // Carregar fotos personalizadas do localStorage
     const loadCustomPhotos = () => {
       const savedPhotos = localStorage.getItem('weddingPhotos');
@@ -43,6 +92,8 @@ export default function Hero() {
   }, []);
 
   React.useEffect(() => {
+    if (backgroundImages.length === 0) return;
+
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => 
         (prevIndex + 1) % backgroundImages.length
@@ -51,6 +102,14 @@ export default function Hero() {
 
     return () => clearInterval(interval);
   }, [backgroundImages.length]);
+
+  // Função para pré-carregar imagens
+  React.useEffect(() => {
+    backgroundImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, [backgroundImages]);
 
   return (
     <section id="inicio" className="min-h-screen bg-gradient-to-br from-rose-50 to-rose-100 flex items-center justify-center relative overflow-hidden">
@@ -64,6 +123,11 @@ export default function Hero() {
             }`}
             style={{
               backgroundImage: `url('${image}')`
+            }}
+            onError={(e) => {
+              console.error(`Erro ao carregar imagem: ${image}`);
+              // Remover imagem com erro da lista
+              setLoadedImages(prev => prev.filter(img => img !== image));
             }}
           />
         ))}
@@ -100,26 +164,37 @@ export default function Hero() {
           </div>
           
           {/* Indicadores do Slideshow */}
-          <div className="flex justify-center space-x-2 mt-8">
-            {backgroundImages.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentImageIndex(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentImageIndex 
-                    ? 'bg-primary-500 scale-125' 
-                    : 'bg-white/50 hover:bg-white/70'
-                }`}
-                aria-label={`Ir para imagem ${index + 1}`}
-              />
-            ))}
-          </div>
+          {backgroundImages.length > 1 && (
+            <div className="flex justify-center space-x-2 mt-8">
+              {backgroundImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentImageIndex 
+                      ? 'bg-primary-500 scale-125' 
+                      : 'bg-white/50 hover:bg-white/70'
+                  }`}
+                  aria-label={`Ir para imagem ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
           
           {/* Indicador de fotos personalizadas */}
           {customPhotos.length > 0 && (
             <div className="mt-4">
               <span className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800">
                 ✨ Usando suas fotos personalizadas ({customPhotos.length})
+              </span>
+            </div>
+          )}
+          
+          {/* Indicador de fotos carregadas da pasta */}
+          {customPhotos.length === 0 && loadedImages.length > 0 && (
+            <div className="mt-4">
+              <span className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                📁 Carregadas {loadedImages.length} fotos da pasta
               </span>
             </div>
           )}
@@ -178,3 +253,4 @@ function CountdownTimer() {
     </div>
   );
 }
+
