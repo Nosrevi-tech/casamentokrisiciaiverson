@@ -7,8 +7,8 @@ export default function Hero() {
   
   // Array de imagens de casamento do Pexels
   const defaultImages = [
-    'public/C:/Users/Iverson Santos/Music/WhatsApp Image 2025-07-10 at 15.06.07 (1).jpeg',
-    'https://photos.app.goo.gl/4LbJZAHxLrcTH74cA',
+    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-110.jpg',
+    'public/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
     'https://photos.app.goo.gl/kRYs9WKry9UDuk9AA',
     'https://photos.app.goo.gl/ajKkUkVjmsJcoiX5A',
     'https://photos.app.goo.gl/9D69aDYoUH6sy5WB8',
