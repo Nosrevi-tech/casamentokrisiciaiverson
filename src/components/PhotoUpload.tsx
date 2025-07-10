@@ -77,8 +77,9 @@ export default function PhotoUpload() {
 
 
   const handleFiles = async (files: File[]) => {
-    // Verificar se não excede o limite de 20 fotos/    if (photos.length + files.length > 20) {
-      alert(`Você pode ter no máximo 20 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${20 - photos.length} fotos.`);
+    // Verificar se não excede o limite de 20 fotos/   
+    if (photos.length + files.length > 5) {
+      alert(`Você pode ter no máximo 5 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${5 - photos.length} fotos.`);
       return;
     }
     
@@ -244,7 +245,7 @@ export default function PhotoUpload() {
             <AlertCircle className="w-5 h-5 text-orange-600" />
             <div>
               <p className="text-sm text-stone-600">Limite por Foto</p>
-              <p className="text-xl font-bold text-sage-600">20 fotos</p>
+              <p className="text-xl font-bold text-sage-600">5 fotos</p>
             </div>
           </div>
         </div>
@@ -297,8 +298,8 @@ export default function PhotoUpload() {
           
           <div className="text-sm text-stone-500">
             <p>Formatos aceitos: JPG, PNG, GIF, WebP</p>
-            <p>Tamanho máximo: 30MB por foto • Limite: 20 fotos</p>
-            <p>Fotos atuais: {photos.length}/20</p>
+            <p>Tamanho máximo: 30MB por foto • Limite: 5 fotos</p>
+            <p>Fotos atuais: {photos.length}/5</p>
           </div>
         </div>
       </div>
@@ -458,7 +459,7 @@ export default function PhotoUpload() {
         <h4 className="font-semibold text-blue-800 mb-2">💡 Dicas para melhores resultados:</h4>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Use imagens em alta resolução (mínimo 1920x1080)</li>
-          <li>• Você pode fazer upload de até 20 fotos personalizadas</li>
+          <li>• Você pode fazer upload de até 5 fotos personalizadas</li>
           <li>• Prefira fotos em formato paisagem (horizontal)</li>
           <li>• Evite imagens muito escuras ou com muito texto</li>
           <li>• As fotos ativas aparecerão automaticamente no slideshow</li>
