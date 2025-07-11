@@ -90,7 +90,8 @@ export default function PhotoUpload() {
     });
 
     if (validFiles.length === 0) {
-     alert(\'Por favor, selecione apenas imagens válidas (máximo 30MB cada).\');      return;
+     alert('Por favor, selecione apenas imagens válidas (máximo 30MB cada).');
+     return;
     }
 
     setIsUploading(true);
