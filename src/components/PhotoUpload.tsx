@@ -116,7 +116,7 @@ export default function PhotoUpload() {
         newPhotos.push(newPhoto);
         setUploadProgress(((i + 1) / validFiles.length) * 100);
       } catch (error) {
-        console.error(\'Erro ao processar arquivo:\', error);
+        console.error('Erro ao processar arquivo:', error);
       }
     }
 
