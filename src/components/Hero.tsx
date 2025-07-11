@@ -10,9 +10,25 @@ export default function Hero() {
   const defaultImages = [
     '/iloveimg-compressed/Casamento civil Kriss e Iverson-110.jpg',
     '/iloveimg-compressed/Casamento civil Kriss e Iverson-111.jpg',
-    '/iloveimg-compressed/Casamento civil Kriss e Iverson-112.jpg',
-    '/iloveimg-compressed/Casamento civil Kriss e Iverson-113.jpg',
-    '/iloveimg-compressed/Casamento civil Kriss e Iverson-114.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-121.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-129.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-136.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-148.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-149.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-161.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-162.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-166.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-179.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-41.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-54.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-59.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-62.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-68.jpg',
+    '/iloveimg-compressed/Casamento civil Kriss e Iverson-74.jpg',
+    '/iloveimg-compressed/noivado kriss e Iverson_-1.jpg',
+    '/iloveimg-compressed/noivado kriss e Iverson_-3.jpg',
+    '/iloveimg-compressed/noivado kriss e Iverson_-32.jpg',
+    
   ];
 
   // Função para carregar todas as imagens da pasta dinamicamente
@@ -22,16 +38,25 @@ export default function Hero() {
       const possibleImages = [
         'Casamento civil Kriss e Iverson-110.jpg',
         'Casamento civil Kriss e Iverson-111.jpg',
-        'Casamento civil Kriss e Iverson-112.jpg',
-        'Casamento civil Kriss e Iverson-113.jpg',
-        'Casamento civil Kriss e Iverson-114.jpg',
-        'Casamento civil Kriss e Iverson-115.jpg',
-        'Casamento civil Kriss e Iverson-116.jpg',
-        'Casamento civil Kriss e Iverson-117.jpg',
-        'Casamento civil Kriss e Iverson-118.jpg',
-        'Casamento civil Kriss e Iverson-119.jpg',
-        'Casamento civil Kriss e Iverson-120.jpg',
-      ];
+        'Casamento civil Kriss e Iverson-121.jpg',
+        'Casamento civil Kriss e Iverson-129.jpg',
+        'Casamento civil Kriss e Iverson-136.jpg',
+        'Casamento civil Kriss e Iverson-148.jpg',
+        'Casamento civil Kriss e Iverson-149.jpg',
+        'Casamento civil Kriss e Iverson-161.jpg',
+       'Casamento civil Kriss e Iverson-162.jpg',
+        'Casamento civil Kriss e Iverson-166.jpg',
+        'Casamento civil Kriss e Iverson-179.jpg',
+        'Casamento civil Kriss e Iverson-41.jpg',
+        'Casamento civil Kriss e Iverson-54.jpg',
+        'Casamento civil Kriss e Iverson-59.jpg',
+        'Casamento civil Kriss e Iverson-62.jpg',
+        'Casamento civil Kriss e Iverson-68.jpg',
+        'Casamento civil Kriss e Iverson-74.jpg',
+        'noivado kriss e Iverson_-1.jpg',
+        'noivado kriss e Iverson_-3.jpg',
+        'noivado kriss e Iverson_-32.jpg',
+             ];
 
       const validImages: string[] = [];
 
