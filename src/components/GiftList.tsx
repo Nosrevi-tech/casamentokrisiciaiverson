@@ -85,9 +85,9 @@ export default function GiftList() {
             
             <div className="bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto">
               <h4 className="font-semibold text-sage-600 mb-2">Dados para PIX:</h4>
-              <p className="text-stone-600 mb-1">Nome: Kriscia e Iverson</p>
+              <p className="text-stone-600 mb-1">Nome: Iverson dos Santos de Paiva</p>
               <p className="text-stone-600 mb-1">Chave PIX: iverson.paiva11@gmail.com</p>
-              <p className="text-stone-600">Banco: Qualquer banco</p>
+              <p className="text-stone-600">Banco: Mercado pago</p>
             </div>
           </div>
         </div>
