@@ -58,7 +58,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedEntry, setSelectedEntry] = useState<RSVPData | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<GiftMessage | null>(null);
-  const [activeTab, setActiveTab] = useState<'rsvp' | 'messages' | 'products' | 'checkout' | 'pending' | 'settings' | 'photos'>('rsvp');
+  const [activeTab, setActiveTab] = useState<'rsvp' | 'messages' | 'photos'>('rsvp');
 
   useEffect(() => {
     loadRSVPData();
@@ -251,46 +251,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 }`}
               >
                 Mensagens de Presentes ({messageStats.totalMessages})
-              </button>
-              <button
-                onClick={() => setActiveTab('products')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'products'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
-                }`}
-              >
-                Gerenciar Produtos
-              </button>
-              <button
-                onClick={() => setActiveTab('checkout')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'checkout'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
-                }`}
-              >
-                Dashboard Pagamentos
-              </button>
-              <button
-                onClick={() => setActiveTab('pending')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'pending'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
-                }`}
-              >
-                Pagamentos Pendentes
-              </button>
-              <button
-                onClick={() => setActiveTab('settings')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'settings'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
-                }`}
-              >
-                Configurações MP
               </button>
               <button
                 onClick={() => setActiveTab('photos')}
@@ -575,14 +535,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           </div>
         )}
 
-        {activeTab === 'products' && <ProductManager />}
-        
-        {activeTab === 'checkout' && <CheckoutDashboard />}
-        
-        {activeTab === 'pending' && <PendingPayments />}
-        
-        {activeTab === 'settings' && <MercadoPagoSettings />}
-        
         {activeTab === 'photos' && <PhotoUpload />}
       </div>
 
