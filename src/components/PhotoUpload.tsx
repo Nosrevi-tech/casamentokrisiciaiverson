@@ -78,15 +78,14 @@ export default function PhotoUpload() {
 
   const handleFiles = async (files: File[]) => {
     // Verificar se não excede o limite de 20 fotos/   
-    if (photos.length + files.length > 5) {
-      alert(`Você pode ter no máximo 5 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${5 - photos.length} fotos.`);
+    if (photos.length + files.length > 20) {
+      alert(`Você pode ter no máximo 20 fotos. Atualmente você tem ${photos.length} fotos. Selecione no máximo ${20 - photos.length} fotos.`);
       return;
     }
     
     const validFiles = files.filter(file => {
-      const isImage = file.type.startsWith(\'image/\');
+      const isImage = file.type.startsWith('image/');
       const isValidSize = file.size <= 30 * 1024 * 1024; // 10MB editei de 10 para 30
-      console.log(`File: ${file.name}, isImage: ${isImage}, isValidSize: ${isValidSize}`);
       return isImage && isValidSize;
     });
 
@@ -103,10 +102,12 @@ export default function PhotoUpload() {
       const file = validFiles[i];
       
       try {
+        const url = await convertFileToBase64(file);
+        
         const newPhoto: UploadedPhoto = {
           id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
           name: file.name,
-          url: URL.createObjectURL(file), // Usar URL.createObjectURL para exibição temporária
+          url: url,
           size: file.size,
           uploadedAt: new Date().toISOString(),
           isActive: true
@@ -125,7 +126,14 @@ export default function PhotoUpload() {
     setUploadProgress(0);
   }; 
 
-
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
 
   const deletePhoto = (photoId: string) => {
     if (confirm('Tem certeza que deseja excluir esta foto?')) {
@@ -245,7 +253,7 @@ export default function PhotoUpload() {
             <AlertCircle className="w-5 h-5 text-orange-600" />
             <div>
               <p className="text-sm text-stone-600">Limite por Foto</p>
-              <p className="text-xl font-bold text-sage-600">5 fotos</p>
+              <p className="text-xl font-bold text-sage-600">20 fotos</p>
             </div>
           </div>
         </div>
@@ -298,8 +306,8 @@ export default function PhotoUpload() {
           
           <div className="text-sm text-stone-500">
             <p>Formatos aceitos: JPG, PNG, GIF, WebP</p>
-            <p>Tamanho máximo: 30MB por foto • Limite: 5 fotos</p>
-            <p>Fotos atuais: {photos.length}/5</p>
+            <p>Tamanho máximo: 30MB por foto • Limite: 20 fotos</p>
+            <p>Fotos atuais: {photos.length}/20</p>
           </div>
         </div>
       </div>
@@ -459,7 +467,7 @@ export default function PhotoUpload() {
         <h4 className="font-semibold text-blue-800 mb-2">💡 Dicas para melhores resultados:</h4>
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Use imagens em alta resolução (mínimo 1920x1080)</li>
-          <li>• Você pode fazer upload de até 5 fotos personalizadas</li>
+          <li>• Você pode fazer upload de até 20 fotos personalizadas</li>
           <li>• Prefira fotos em formato paisagem (horizontal)</li>
           <li>• Evite imagens muito escuras ou com muito texto</li>
           <li>• As fotos ativas aparecerão automaticamente no slideshow</li>
