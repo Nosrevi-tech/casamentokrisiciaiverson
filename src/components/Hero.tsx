@@ -191,7 +191,7 @@ export default function Hero() {
           {/* Indicadores do Slideshow */}
           {backgroundImages.length > 1 && (
             <div className="flex justify-center space-x-2 mt-8">
-              {backgroundImages.slice(0, 4).map((_, index) => (
+              {backgroundImages.slice(0, 20).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
@@ -211,15 +211,6 @@ export default function Hero() {
             <div className="mt-4">
               <span className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-800">
                 ✨ Usando suas fotos personalizadas ({customPhotos.length})
-              </span>
-            </div>
-          )}
-          
-          {/* Indicador de fotos carregadas da pasta */}
-          {customPhotos.length === 0 && loadedImages.length > 0 && (
-            <div className="mt-4">
-              <span className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                📁 Carregadas {loadedImages.length} fotos da pasta
               </span>
             </div>
           )}
