@@ -100,15 +100,9 @@ export default function Venues() {
             </div>
             
             <div>
-              <h4 className="text-lg font-semibold text-sage-600 mb-4">Transporte</h4>
-              <p className="text-stone-600 mb-4">
-                Haverá transporte gratuito da igreja para o local da festa, saindo às 17:30.
-              </p>
               
-              <h4 className="text-lg font-semibold text-sage-600 mb-4">Crianças</h4>
-              <p className="text-stone-600">
-                Crianças são muito bem-vindas! Teremos espaço kids na festa.
-              </p>
+              
+          
             </div>
           </div>
         </div>
