@@ -49,8 +49,7 @@ export default function OurStory() {
                   </div>
                   <h3 className="text-2xl font-serif text-sage-600">Como nos conhecemos</h3>
                 </div>
-                <p className="text-stone-600 leading-relaxed">
-                  
+                <p className="text-stone-600 leading-relaxed">                  
                   Nos conhecemos no final de 2017, em um ensaio de dança para uma festa de 15 anos.
 Ele estava largado em uma poltrona, vidrado no Clash Royale, quando ela chegou — tímida, com aquele jeitinho de quem não conhecia ninguém.
 
@@ -63,13 +62,7 @@ Entre um ensaio e outro, a conversa começou a fluir. Ele, com pouco assunto, s�
 Até que, num ato de coragem moderna (ou covardia clássica?), ele pediu o primeiro beijo... por WhatsApp.
 Pessoalmente, o medo ainda vencia. Mas ela aceitou — e foi assim que tudo começou.
 
-De um olhar tímido a um beijo esperado, de uma dança ensaiada a uma história real. ❤️
-
-                  
-
-
-
-
+De um olhar tímido a um beijo esperado, de uma dança ensaiada a uma história real. ❤️      
                   
                 </p>
               </div>
