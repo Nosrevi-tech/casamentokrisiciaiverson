@@ -9,7 +9,7 @@ export default function Venues() {
       address: 'R. Vig. Brito, 26 - Centro, Barbacena - MG, 36200-004',
       time: '17:00',
       phone: '(32) 3331-0270',
-      mapUrl: 'https://maps.google.com/?q=Igreja+São+José+São+Paulo',
+      mapUrl: 'https://g.co/kgs/65sRtKA',
       image: 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqC_dTMb3fHAnaclbOkRZDlvzfPQ63VxrQyEd1JhZx7fEtJGFYgDCpx2klu7PW0UXcQkXi96aUWg3CUkPSPg4di5mW47c2vBfbSviQXU5sY9WfhjV98pMrZdFIulaaEqij5uloD=s680-w680-h510-rw'
     },
     {
