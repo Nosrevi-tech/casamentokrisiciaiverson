@@ -92,7 +92,7 @@ export default function RSVP() {
           <h2 className="text-4xl md:text-5xl font-serif text-sage-600 mb-6">Confirme sua Presença</h2>
           <p className="text-xl text-stone-600 max-w-2xl mx-auto">
             Sua presença é fundamental para tornar nosso dia ainda mais especial. 
-            Por favor, confirme até 15 de maio.
+            Por favor, confirme sua presença.
           </p>
         </div>
 
