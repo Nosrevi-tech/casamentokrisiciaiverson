@@ -50,9 +50,19 @@ export default function OurStory() {
                   <h3 className="text-2xl font-serif text-sage-600">Como nos conhecemos</h3>
                 </div>
                 <p className="text-stone-600 leading-relaxed">
-                  Foi em uma tarde de outono na universidade. Ana estava na biblioteca estudando para as provas finais, 
-                  e Carlos, perdido entre os livros, pediu ajuda para encontrar um livro específico. 
-                  Aquele encontro casual se transformou em horas de conversa e risadas.
+                  Nos conhecemos no final de 2017, em um ensaio de dança para uma festa de 15 anos.
+Ele estava largado em uma poltrona, vidrado no Clash Royale, quando ela chegou — tímida, com aquele jeitinho de quem não conhecia ninguém.
+
+Ele lançou um olhar de canto, tentando disfarçar... mas falhou miseravelmente. Todo mundo percebeu, principalmente a Maria, que soltou logo:
+"Eu vi como você olhou pra aquela compulina, os olhos até brilharam!"
+E não é que ela estava certa? No fundo, ele torcia pra que ela fosse seu par na dança — e o destino colaborou.
+
+Entre um ensaio e outro, a conversa começou a fluir. Ele, com pouco assunto, só escutava... e ela, ah, falava como ninguém. Mas ele prestava atenção em cada palavra, encantado.
+
+Até que, num ato de coragem moderna (ou covardia clássica?), ele pediu o primeiro beijo... por WhatsApp.
+Pessoalmente, o medo ainda vencia. Mas ela aceitou — e foi assim que tudo começou.
+
+De um olhar tímido a um beijo esperado, de uma dança ensaiada a uma história real. ❤️
                 </p>
               </div>
             </div>
@@ -62,12 +72,24 @@ export default function OurStory() {
                 <div className="bg-primary-500 p-3 rounded-full">
                   <Users className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-serif text-sage-600">Primeiros anos</h3>
+                <h3 className="text-2xl font-serif text-sage-600">Momentos mais Marcantes</h3>
               </div>
               <p className="text-stone-600 leading-relaxed">
-                Desde o primeiro encontro, soubemos que éramos feitos um para o outro. 
-                Compartilhamos sonhos, superamos desafios e crescemos juntos. 
-                Cada momento ao lado dela/dele confirmava que havíamos encontrado nosso complemento perfeito.
+               Nossa história foi marcada por muitos momentos importantes, começados a partir do nosso primeiro beijo, e após algumas semanas
+uma pergunta simples, mas cheia de emoção: "Você quer namorar comigo?"
+E ela disse sim. E, como manda o figurino com o coração acelerado, logo depois ele foi pedir a bênção dos seus pais.
+Nossa história foi se construindo em momentos únicos. Nossa primeira viagem juntos foi mais do que especial: foi nela que te entreguei o anel de namoro, símbolo do nosso compromisso e do amor que já transbordava.
+
+Vieram outras viagens, tantos lugares novos, tantas lembranças inesquecíveis... Conhecemos as famílias um do outro, estreitamos laços, criamos raízes.
+
+Teve diversão, teve risadas, teve até a vez em que você quebrou a mão no carrinho de bate-bate, porque sim, fui eu quem bateu. (Desculpa de novo, amor!)
+
+Teve nosso primeiro “casamento de mentira” na quadrilha, que sem sabermos já anunciava, em tom de brincadeira, o que estava por vir.
+Vieram os jantares românticos, os momentos só nossos. E também as saídas com os amigos, onde fizemos questão de nos integrar aos mundos um do outro, porque amar também é compartilhar o que temos de mais querido.
+
+E então chegou o dia mais importante da nossa história até aqui: o nosso casamento civil. O momento em que, de mãos dadas, decidimos oficializar tudo aquilo que já era certo no coração.
+
+Cada detalhe desses quase oito anos juntos nos fez chegar até aqui, a porta do momento mais importante de nossa história. 
               </p>
             </div>
           </div>
@@ -80,9 +102,13 @@ export default function OurStory() {
             </div>
             <h3 className="text-3xl font-serif text-sage-600 mb-6">O Pedido</h3>
             <p className="text-lg text-stone-600 max-w-3xl mx-auto leading-relaxed">
-              Em uma noite estrelada no nosso lugar favorito, Carlos se ajoelhou e fez a pergunta que mudaria nossas vidas para sempre. 
-              Com lágrimas nos olhos e o coração transbordando de amor, Ana disse "SIM!" e começamos a planejar o dia mais especial das nossas vidas.
-              Agora, queremos compartilhar essa alegria com as pessoas mais importantes: vocês, nossa família e amigos queridos.
+             A noite não estava fria, mas minhas mãos tremiam como se estivessem sentindo o inverno — era o nervosismo tomando conta de mim. Convidei ela para um jantar especial, em um lugar diferente, com o coração cheio de intenções e sonhos.
+
+Tudo estava preparado: entreguei as alianças ao garçom e combinei com o irmão e a cunhada dela, que são incríveis com a fotografia, para registrarem cada detalhe daquele momento único.
+
+Quando a sobremesa chegou, meu coração quase não cabia no peito. Com a voz embargada e os olhos brilhando, fiz o pedido mais sincero da minha vida. E então… ela disse ‘SIM’.
+
+A partir dali, o tempo parou. Vieram as lágrimas, os sorrisos, os abraços. Foi um momento de puro amor, daqueles que a gente leva pra sempre na alma.
             </p>
           </div>
         </div>
