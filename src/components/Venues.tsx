@@ -5,12 +5,12 @@ export default function Venues() {
   const venues = [
     {
       type: 'Cerimônia Religiosa',
-      name: 'Igreja São José',
-      address: 'Rua das Flores, 123 - Centro, São Paulo - SP',
-      time: '16:00',
-      phone: '(11) 3456-7890',
+      name: 'Memorial da Beata Isabel Cristina',
+      address: 'R. Vig. Brito, 26 - Centro, Barbacena - MG, 36200-004',
+      time: '17:00',
+      phone: '(32) 3331-0270',
       mapUrl: 'https://maps.google.com/?q=Igreja+São+José+São+Paulo',
-      image: 'https://images.pexels.com/photos/2959192/pexels-photo-2959192.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
+      image: 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqC_dTMb3fHAnaclbOkRZDlvzfPQ63VxrQyEd1JhZx7fEtJGFYgDCpx2klu7PW0UXcQkXi96aUWg3CUkPSPg4di5mW47c2vBfbSviQXU5sY9WfhjV98pMrZdFIulaaEqij5uloD=s680-w680-h510-rw'
     },
     {
       type: 'Festa de Casamento',
@@ -18,7 +18,7 @@ export default function Venues() {
       address: 'Av. Paulista, 456 - Jardim Paulista, São Paulo - SP',
       time: '19:00',
       phone: '(11) 2345-6789',
-      mapUrl: 'https://maps.google.com/?q=Espaço+Villa+Fontana+São+Paulo',
+      mapUrl: 'https://g.co/kgs/65sRtKA',
       image: 'https://images.pexels.com/photos/1444442/pexels-photo-1444442.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
     }
   ];
