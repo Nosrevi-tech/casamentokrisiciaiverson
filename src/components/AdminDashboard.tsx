@@ -22,10 +22,7 @@ interface RSVPData {
   name: string;
   email: string;
   phone: string;
-  guests: string;
   attending: string;
-  dietaryRestrictions: string;
-  songRequest: string;
   message: string;
   submittedAt: string;
 }
@@ -102,10 +99,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         'Nome',
         'Email',
         'Telefone',
-        'Acompanhantes',
         'Comparecerá',
-        'Restrições Alimentares',
-        'Sugestão Musical',
         'Mensagem',
         'Data de Envio'
       ];
@@ -116,10 +110,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           entry.name,
           entry.email,
           entry.phone,
-          entry.guests,
           entry.attending === 'yes' ? 'Sim' : 'Não',
-          entry.dietaryRestrictions || 'Nenhuma',
-          entry.songRequest || 'Nenhuma',
           entry.message || 'Nenhuma',
           new Date(entry.submittedAt).toLocaleString('pt-BR')
         ].join(','))
@@ -195,9 +186,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     total: rsvpData.length,
     attending: rsvpData.filter(entry => entry.attending === 'yes').length,
     notAttending: rsvpData.filter(entry => entry.attending === 'no').length,
-    totalGuests: rsvpData
-      .filter(entry => entry.attending === 'yes')
-      .reduce((sum, entry) => sum + parseInt(entry.guests), 0)
   };
 
   const messageStats = {
@@ -311,8 +299,10 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   <Calendar className="w-6 h-6 text-primary-500" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-stone-600">Total de Convidados</p>
-                  <p className="text-2xl font-bold text-sage-600">{stats.totalGuests}</p>
+                  <p className="text-sm font-medium text-stone-600">Taxa de Confirmação</p>
+                  <p className="text-2xl font-bold text-sage-600">
+                    {stats.total > 0 ? Math.round((stats.attending / stats.total) * 100) : 0}%
+                  </p>
                 </div>
               </div>
             </div>
@@ -416,9 +406,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
-                      Acompanhantes
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
                       Data
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">
@@ -446,9 +433,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         }`}>
                           {entry.attending === 'yes' ? 'Confirmado' : 'Não comparecerá'}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-sage-600">
-                        {entry.guests}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
                         {new Date(entry.submittedAt).toLocaleDateString('pt-BR')}
@@ -570,32 +554,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700">Status</label>
-                    <p className="text-sage-600">
-                      {selectedEntry.attending === 'yes' ? 'Confirmado' : 'Não comparecerá'}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700">Acompanhantes</label>
-                    <p className="text-sage-600">{selectedEntry.guests}</p>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-stone-700">Status</label>
+                  <p className="text-sage-600">
+                    {selectedEntry.attending === 'yes' ? 'Confirmado' : 'Não comparecerá'}
+                  </p>
                 </div>
-
-                {selectedEntry.dietaryRestrictions && (
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700">Restrições Alimentares</label>
-                    <p className="text-sage-600">{selectedEntry.dietaryRestrictions}</p>
-                  </div>
-                )}
-
-                {selectedEntry.songRequest && (
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700">Sugestão Musical</label>
-                    <p className="text-sage-600">{selectedEntry.songRequest}</p>
-                  </div>
-                )}
 
                 {selectedEntry.message && (
                   <div>
