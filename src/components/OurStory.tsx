@@ -73,7 +73,7 @@ De um olhar tímido a um beijo esperado, de uma dança ensaiada a uma história 
                 <div className="bg-primary-500 p-3 rounded-full">
                   <Users className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-serif text-sage-600">Momentos mais Marcantes</h3>
+                <h3 className="text-2xl font-serif text-sage-600">Nossa Trajetória</h3>
               </div>
               <p className="text-stone-600 leading-relaxed">
                Nossa história foi marcada por muitos momentos importantes, começados a partir do nosso primeiro beijo, e após algumas semanas
