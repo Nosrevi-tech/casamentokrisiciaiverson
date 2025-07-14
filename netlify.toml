@@ -1,6 +1,6 @@
 [build]
   base = "project"
-  publish = "dist"
+  publish = "project/dist"
   command = "npm install && npm run build"
 
 [functions]
