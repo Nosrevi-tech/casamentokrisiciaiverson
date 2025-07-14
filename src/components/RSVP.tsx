@@ -6,10 +6,7 @@ export default function RSVP() {
     name: '',
     email: '',
     phone: '',
-    guests: '1',
     attending: '',
-    dietaryRestrictions: '',
-    songRequest: '',
     message: ''
   });
 
@@ -44,10 +41,7 @@ export default function RSVP() {
         name: '',
         email: '',
         phone: '',
-        guests: '1',
         attending: '',
-        dietaryRestrictions: '',
-        songRequest: '',
         message: ''
       });
     }, 3000);
@@ -150,91 +144,37 @@ export default function RSVP() {
 
                 <div>
                   <label htmlFor="guests" className="block text-sm font-medium text-stone-700 mb-2">
-                    Número de Acompanhantes
+                    Confirmação de Presença
                   </label>
-                  <select
-                    id="guests"
-                    name="guests"
-                    value={formData.guests}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  >
-                    <option value="1">Apenas eu</option>
-                    <option value="2">Eu + 1 acompanhante</option>
-                    <option value="3">Eu + 2 acompanhantes</option>
-                    <option value="4">Eu + 3 acompanhantes</option>
-                    <option value="5">Eu + 4 acompanhantes</option>
-                  </select>
+                  <div className="flex space-x-6">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="attending"
+                        value="yes"
+                        checked={formData.attending === 'yes'}
+                        onChange={handleChange}
+                        className="mr-2 text-primary-500 focus:ring-primary-500"
+                        required
+                      />
+                      <span className="text-stone-700">Sim, estarei presente! 🎉</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="attending"
+                        value="no"
+                        checked={formData.attending === 'no'}
+                        onChange={handleChange}
+                        className="mr-2 text-primary-500 focus:ring-primary-500"
+                        required
+                      />
+                      <span className="text-stone-700">Infelizmente não poderei ir 😢</span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-4">
-                  Você irá comparecer? *
-                </label>
-                <div className="flex space-x-6">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="attending"
-                      value="yes"
-                      checked={formData.attending === 'yes'}
-                      onChange={handleChange}
-                      className="mr-2 text-primary-500 focus:ring-primary-500"
-                      required
-                    />
-                    <span className="text-stone-700">Sim, estarei presente! 🎉</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="attending"
-                      value="no"
-                      checked={formData.attending === 'no'}
-                      onChange={handleChange}
-                      className="mr-2 text-primary-500 focus:ring-primary-500"
-                      required
-                    />
-                    <span className="text-stone-700">Infelizmente não poderei ir 😢</span>
-                  </label>
-                </div>
-              </div>
-
-              {formData.attending === 'yes' && (
-                <div className="space-y-6 bg-rose-50 p-6 rounded-lg">
-                  <div>
-                    <label htmlFor="dietaryRestrictions" className="block text-sm font-medium text-stone-700 mb-2">
-                      <Utensils className="inline w-4 h-4 mr-1" />
-                      Restrições Alimentares
-                    </label>
-                    <textarea
-                      id="dietaryRestrictions"
-                      name="dietaryRestrictions"
-                      value={formData.dietaryRestrictions}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                      placeholder="Alguma alergia ou restrição alimentar que devemos saber?"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="songRequest" className="block text-sm font-medium text-stone-700 mb-2">
-                      <Music className="inline w-4 h-4 mr-1" />
-                      Sugestão Musical
-                    </label>
-                    <input
-                      type="text"
-                      id="songRequest"
-                      name="songRequest"
-                      value={formData.songRequest}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                      placeholder="Qual música não pode faltar na nossa festa?"
-                    />
-                  </div>
-                </div>
-              )}
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-stone-700 mb-2">
@@ -274,10 +214,10 @@ export default function RSVP() {
 
             <div className="bg-white rounded-lg p-6 text-center shadow-lg">
               <div className="bg-rose-100 p-3 rounded-full inline-flex mb-4">
-                <Utensils className="w-6 h-6 text-primary-500" />
+                <Users className="w-6 h-6 text-primary-500" />
               </div>
-              <h3 className="font-semibold text-sage-600 mb-2">Jantar Completo</h3>
-              <p className="text-stone-600">Entrada, prato principal e sobremesa</p>
+              <h3 className="font-semibold text-sage-600 mb-2">Confirmação Individual</h3>
+              <p className="text-stone-600">Cada pessoa deve confirmar individualmente</p>
             </div>
 
             <div className="bg-white rounded-lg p-6 text-center shadow-lg">
