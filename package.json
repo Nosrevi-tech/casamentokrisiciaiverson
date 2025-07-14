@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:netlify": "netlify dev",
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
     "server": "cd server && npm run dev",
     "build": "vite build",
@@ -12,6 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@netlify/blobs": "^8.1.0",
     "@netlify/blobs": "^10.0.4",
     "lucide-react": "^0.344.0",
     "mercadopago": "^2.0.11",
@@ -20,6 +22,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "netlify-cli": "^17.36.4",
     "@eslint/js": "^9.9.1",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.5",

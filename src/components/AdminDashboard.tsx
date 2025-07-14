@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import rsvpService from '../services/rsvpService';
 import ProductManager from './ProductManager';
 import CheckoutDashboard from './CheckoutDashboard';
 import PendingPayments from './PendingPayments';
@@ -56,16 +57,24 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [selectedEntry, setSelectedEntry] = useState<RSVPData | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<GiftMessage | null>(null);
   const [activeTab, setActiveTab] = useState<'rsvp' | 'messages' | 'photos'>('rsvp');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadRSVPData();
     loadGiftMessages();
   }, []);
 
-  const loadRSVPData = () => {
-    const savedData = localStorage.getItem('weddingRSVP');
-    if (savedData) {
-      setRsvpData(JSON.parse(savedData));
+  const loadRSVPData = async () => {
+    setIsLoading(true);
+    try {
+      const result = await rsvpService.getRSVPs();
+      if (result.success && result.data) {
+        setRsvpData(result.data);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar confirmações:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -256,7 +265,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
         {/* Stats Cards */}
         {activeTab === 'rsvp' ? (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <div className="flex items-center">
                 <div className="bg-blue-100 p-3 rounded-full">
@@ -350,6 +359,24 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         {/* Filters and Search */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-4">
+              {isLoading && (
+                <div className="flex items-center space-x-2 text-blue-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  <span className="text-sm">Carregando...</span>
+                </div>
+              )}
+              
+              <button
+                onClick={loadRSVPData}
+                disabled={isLoading}
+                className="flex items-center space-x-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+              >
+                <span>🔄</span>
+                <span>Atualizar</span>
+              </button>
+            </div>
+            
             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-stone-400" />
@@ -460,7 +487,14 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
             {filteredData.length === 0 && (
               <div className="text-center py-12">
                 <Users className="w-12 h-12 text-stone-400 mx-auto mb-4" />
-                <p className="text-stone-500">Nenhuma confirmação encontrada</p>
+                <p className="text-stone-500">
+                  {isLoading ? 'Carregando confirmações...' : 'Nenhuma confirmação encontrada'}
+                </p>
+                {!rsvpService.isNetlifyEnvironment() && (
+                  <p className="text-stone-400 text-sm mt-2">
+                    💡 Em produção, os dados serão salvos no Netlify Database
+                  </p>
+                )}
               </div>
             )}
           </div>
