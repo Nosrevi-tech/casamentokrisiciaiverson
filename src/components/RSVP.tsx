@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Send, Users, Utensils, Music } from 'lucide-react';
+import rsvpService from '../services/rsvpService';
 
 export default function RSVP() {
   const [formData, setFormData] = useState({
@@ -11,40 +12,41 @@ export default function RSVP() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
     
-    // Create RSVP entry with unique ID and timestamp
-    const rsvpEntry = {
-      id: Date.now().toString(),
-      ...formData,
-      submittedAt: new Date().toISOString()
-    };
-
-    // Get existing RSVP data from localStorage
-    const existingData = localStorage.getItem('weddingRSVP');
-    const rsvpList = existingData ? JSON.parse(existingData) : [];
-    
-    // Add new entry
-    rsvpList.push(rsvpEntry);
-    
-    // Save back to localStorage
-    localStorage.setItem('weddingRSVP', JSON.stringify(rsvpList));
-    
-    setIsSubmitted(true);
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        attending: '',
-        message: ''
-      });
-    }, 3000);
+    try {
+      // Salvar usando o serviço (Netlify Database ou localStorage como fallback)
+      const result = await rsvpService.saveRSVP(formData);
+      
+      if (result.success) {
+        setIsSubmitted(true);
+        
+        // Reset form after 3 seconds
+        setTimeout(() => {
+          setIsSubmitted(false);
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            attending: '',
+            message: ''
+          });
+        }, 3000);
+      } else {
+        setError('Erro ao salvar confirmação. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar confirmação:', error);
+      setError('Erro ao enviar confirmação. Verifique sua conexão e tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -63,13 +65,18 @@ export default function RSVP() {
               <div className="bg-green-100 p-4 rounded-full inline-flex mb-6">
                 <Send className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-3xl font-serif text-sage-600 mb-4">Confirmação Recebida!</h2>
+              <h2 className="text-3xl font-serif text-sage-600 mb-4">
+                {rsvpService.isNetlifyEnvironment() ? 'Confirmação Salva no Banco!' : 'Confirmação Recebida!'}
+              </h2>
               <p className="text-lg text-stone-600 mb-6">
-                Obrigado por confirmar sua presença. Recebemos sua resposta e estamos muito felizes em tê-lo(a) conosco!
+                Obrigado por confirmar sua presença. Sua confirmação foi salva com segurança e estamos muito felizes em tê-lo(a) conosco!
               </p>
               <div className="bg-rose-50 p-4 rounded-lg">
                 <p className="text-primary-600 font-medium">
-                  Sua confirmação foi salva com sucesso. Aguardamos você no nosso grande dia! 💕
+                  {rsvpService.isNetlifyEnvironment() 
+                    ? 'Sua confirmação está segura no nosso banco de dados. Aguardamos você no nosso grande dia! 💕'
+                    : 'Sua confirmação foi salva com sucesso. Aguardamos você no nosso grande dia! 💕'
+                  }
                 </p>
               </div>
             </div>
@@ -175,6 +182,11 @@ export default function RSVP() {
                 </div>
               </div>
 
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-stone-700 mb-2">
@@ -194,10 +206,11 @@ export default function RSVP() {
               <div className="text-center pt-6">
                 <button
                   type="submit"
-                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary-500 to-rose-500 text-white px-12 py-4 rounded-full font-semibold hover:from-primary-600 hover:to-rose-600 transition-colors shadow-lg hover:shadow-xl"
+                  disabled={isLoading}
+                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary-500 to-rose-500 text-white px-12 py-4 rounded-full font-semibold hover:from-primary-600 hover:to-rose-600 transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-5 h-5" />
-                  <span>Confirmar Presença</span>
+                  <Send className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                  <span>{isLoading ? 'Salvando...' : 'Confirmar Presença'}</span>
                 </button>
               </div>
             </form>
@@ -226,6 +239,16 @@ export default function RSVP() {
               </div>
               <h3 className="font-semibold text-sage-600 mb-2">Festa até 2h</h3>
               <p className="text-stone-600">Música, dança e muita diversão</p>
+            </div>
+          </div>
+
+          {/* Indicador do ambiente */}
+          <div className="mt-8 text-center">
+            <div className="inline-flex items-center px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+              {rsvpService.isNetlifyEnvironment() 
+                ? '🔒 Dados salvos com segurança no Netlify Database'
+                : '💾 Modo desenvolvimento - dados salvos localmente'
+              }
             </div>
           </div>
         </div>
