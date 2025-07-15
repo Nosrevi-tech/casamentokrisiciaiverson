@@ -1,9 +1,60 @@
-import React from 'react';
-import { ExternalLink, Users, Utensils, Music, Calendar, Clock, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, Calendar, Clock, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function RSVP() {
-  const handleGoToForm = () => {
-    window.open('https://docs.google.com/forms/d/e/1FAIpQLSc2biD9rnLxcQW6Ck81bpM7O2aT2CQU0B_UGIwv2HIX_m-XIQ/viewform?usp=header', '_blank');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    attending: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      // Tentar salvar no Netlify Database primeiro
+      const response = await fetch('/.netlify/functions/save-rsvp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          attending: '',
+          message: ''
+        });
+      } else {
+        throw new Error('Erro ao salvar confirmação');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+      setSubmitStatus('error');
+      setErrorMessage('Erro ao enviar confirmação. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -13,40 +64,133 @@ export default function RSVP() {
           <h2 className="text-4xl md:text-5xl font-serif text-sage-600 mb-6">Confirme sua Presença</h2>
           <p className="text-xl text-stone-600 max-w-2xl mx-auto">
             Sua presença é fundamental para tornar nosso dia ainda mais especial. 
-            Por favor, confirme sua presença através do nosso formulário.
+            Por favor, confirme sua presença através do formulário abaixo.
           </p>
         </div>
 
         <div className="max-w-4xl mx-auto">
-          {/* Card Principal */}
-          <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+          {/* Formulário Principal */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
             <div className="flex justify-center mb-8">
               <div className="bg-primary-500 p-6 rounded-full">
                 <Users className="w-12 h-12 text-white" />
               </div>
             </div>
             
-            <h3 className="text-3xl font-serif text-sage-600 mb-6">
+            <h3 className="text-3xl font-serif text-sage-600 mb-8 text-center">
               Formulário de Confirmação
             </h3>
+
+            {submitStatus === 'success' && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <p className="text-green-700">
+                  Confirmação enviada com sucesso! Obrigado por confirmar sua presença.
+                </p>
+              </div>
+            )}
+
+            {submitStatus === 'error' && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+                <p className="text-red-700">{errorMessage}</p>
+              </div>
+            )}
             
-            <p className="text-lg text-stone-600 mb-8 max-w-2xl mx-auto">
-              Criamos um formulário especial para você confirmar sua presença de forma rápida e fácil. 
-              Suas informações são importantes para organizarmos melhor nossa celebração.
-            </p>
-            
-            <button
-              onClick={handleGoToForm}
-              className="inline-flex items-center space-x-3 bg-gradient-to-r from-primary-500 to-rose-500 text-white px-12 py-4 rounded-full font-semibold text-lg hover:from-primary-600 hover:to-rose-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              <Users className="w-6 h-6" />
-              <span>Confirmar Presença</span>
-              <ExternalLink className="w-5 h-5" />
-            </button>
-            
-            <p className="text-sm text-stone-500 mt-4">
-              Você será redirecionado para o Google Forms
-            </p>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-stone-700 mb-2">
+                    Nome Completo *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    placeholder="Seu nome completo"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    placeholder="seu@email.com"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-stone-700 mb-2">
+                    Telefone *
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    required
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="attending" className="block text-sm font-medium text-stone-700 mb-2">
+                    Confirmação de Presença *
+                  </label>
+                  <select
+                    id="attending"
+                    name="attending"
+                    required
+                    value={formData.attending}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  >
+                    <option value="">Selecione uma opção</option>
+                    <option value="yes">Sim, estarei presente</option>
+                    <option value="no">Não poderei comparecer</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-stone-700 mb-2">
+                  Mensagem (Opcional)
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows={4}
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  placeholder="Deixe uma mensagem carinhosa para os noivos..."
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-primary-500 to-rose-500 text-white py-4 rounded-lg font-semibold text-lg hover:from-primary-600 hover:to-rose-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {isSubmitting ? 'Enviando...' : 'Confirmar Presença'}
+              </button>
+            </form>
           </div>
 
           {/* Cards Informativos */}
@@ -69,7 +213,7 @@ export default function RSVP() {
 
             <div className="bg-white rounded-lg p-6 text-center shadow-lg">
               <div className="bg-rose-100 p-3 rounded-full inline-flex mb-4">
-                <Music className="w-6 h-6 text-primary-500" />
+                <Clock className="w-6 h-6 text-primary-500" />
               </div>
               <h3 className="font-semibold text-sage-600 mb-2">Festa até 2h</h3>
               <p className="text-stone-600">Música, dança e muita diversão</p>

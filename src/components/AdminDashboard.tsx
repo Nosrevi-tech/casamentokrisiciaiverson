@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import ProductManager from './ProductManager';
-import CheckoutDashboard from './CheckoutDashboard';
-import PendingPayments from './PendingPayments';
-import MercadoPagoSettings from './MercadoPagoSettings';
 import PhotoUpload from './PhotoUpload';
+import rsvpService, { RSVPData } from '../services/rsvpService';
 import { 
   Users, 
   Calendar, 
@@ -15,7 +12,9 @@ import {
   LogOut,
   Trash2,
   Eye,
-  ExternalLink
+  Mail,
+  Phone,
+  MessageSquare
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -40,19 +39,37 @@ interface GiftMessage {
 }
 
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
+  const [rsvps, setRsvps] = useState<RSVPData[]>([]);
   const [giftMessages, setGiftMessages] = useState<GiftMessage[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'yes' | 'no'>('all');
+  const [selectedRsvp, setSelectedRsvp] = useState<RSVPData | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<GiftMessage | null>(null);
   const [activeTab, setActiveTab] = useState<'rsvp' | 'messages' | 'photos'>('rsvp');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadGiftMessages();
+    loadData();
   }, []);
 
-  const loadGiftMessages = () => {
-    const savedMessages = localStorage.getItem('giftMessages');
-    if (savedMessages) {
-      setGiftMessages(JSON.parse(savedMessages));
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      // Carregar RSVPs
+      const rsvpResult = await rsvpService.getRSVPs();
+      if (rsvpResult.success && rsvpResult.data) {
+        setRsvps(rsvpResult.data);
+      }
+
+      // Carregar mensagens de presentes
+      const savedMessages = localStorage.getItem('giftMessages');
+      if (savedMessages) {
+        setGiftMessages(JSON.parse(savedMessages));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,13 +78,61 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     onLogout();
   };
 
-  const deleteMessage = (id: string) => {
-    const updatedMessages = giftMessages.filter(message => message.id !== id);
-    setGiftMessages(updatedMessages);
-    localStorage.setItem('giftMessages', JSON.stringify(updatedMessages));
+  const deleteRsvp = async (id: string) => {
+    if (confirm('Tem certeza que deseja excluir esta confirmação?')) {
+      // Para localStorage, filtrar e salvar
+      const updatedRsvps = rsvps.filter(rsvp => rsvp.id !== id);
+      setRsvps(updatedRsvps);
+      
+      // Se estiver usando localStorage como fallback
+      if (!rsvpService.isNetlifyEnvironment()) {
+        localStorage.setItem('weddingRSVP', JSON.stringify(updatedRsvps));
+      }
+    }
   };
 
-  const exportToCSV = () => {
+  const deleteMessage = (id: string) => {
+    if (confirm('Tem certeza que deseja excluir esta mensagem?')) {
+      const updatedMessages = giftMessages.filter(message => message.id !== id);
+      setGiftMessages(updatedMessages);
+      localStorage.setItem('giftMessages', JSON.stringify(updatedMessages));
+    }
+  };
+
+  const exportRsvpToCSV = () => {
+    const headers = [
+      'Nome',
+      'Email',
+      'Telefone',
+      'Confirmação',
+      'Mensagem',
+      'Data de Envio'
+    ];
+
+    const csvContent = [
+      headers.join(','),
+      ...filteredRsvps.map(rsvp => [
+        rsvp.name,
+        rsvp.email,
+        rsvp.phone,
+        rsvp.attending === 'yes' ? 'Sim' : 'Não',
+        `"${rsvp.message || ''}"`,
+        new Date(rsvp.submittedAt || '').toLocaleString('pt-BR')
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'confirmacoes-presenca-casamento.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportMessagesToCSV = () => {
     const headers = [
       'Remetente',
       'Representando',
@@ -106,14 +171,23 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     document.body.removeChild(link);
   };
 
+  const filteredRsvps = rsvps.filter(rsvp => {
+    const matchesSearch = rsvp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         rsvp.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === 'all' || rsvp.attending === filterStatus;
+    return matchesSearch && matchesFilter;
+  });
+
   const filteredMessages = giftMessages.filter(message => {
     return message.senderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
            message.payerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
            message.message.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  const openGoogleForms = () => {
-    window.open('https://docs.google.com/forms/d/e/1FAIpQLSc2biD9rnLxcQW6Ck81bpM7O2aT2CQU0B_UGIwv2HIX_m-XIQ/viewform?usp=header', '_blank');
+  const rsvpStats = {
+    total: rsvps.length,
+    attending: rsvps.filter(rsvp => rsvp.attending === 'yes').length,
+    notAttending: rsvps.filter(rsvp => rsvp.attending === 'no').length
   };
 
   const messageStats = {
@@ -156,7 +230,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
                 }`}
               >
-                Confirmações de Presença (Google Forms)
+                Confirmações de Presença ({rsvpStats.total})
               </button>
               <button
                 onClick={() => setActiveTab('messages')}
@@ -183,6 +257,46 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         </div>
 
         {/* Stats Cards */}
+        {activeTab === 'rsvp' && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="flex items-center">
+                <div className="bg-blue-100 p-3 rounded-full">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-stone-600">Total de Confirmações</p>
+                  <p className="text-2xl font-bold text-sage-600">{rsvpStats.total}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="flex items-center">
+                <div className="bg-green-100 p-3 rounded-full">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-stone-600">Confirmaram Presença</p>
+                  <p className="text-2xl font-bold text-sage-600">{rsvpStats.attending}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow-sm">
+              <div className="flex items-center">
+                <div className="bg-red-100 p-3 rounded-full">
+                  <XCircle className="w-6 h-6 text-red-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-stone-600">Não Comparecerão</p>
+                  <p className="text-2xl font-bold text-sage-600">{rsvpStats.notAttending}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'messages' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white rounded-lg p-6 shadow-sm">
@@ -225,40 +339,134 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
         {/* Content based on active tab */}
         {activeTab === 'rsvp' ? (
-          /* Google Forms Integration */
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <div className="max-w-2xl mx-auto">
-              <div className="bg-blue-100 p-4 rounded-full inline-flex mb-6">
-                <ExternalLink className="w-8 h-8 text-blue-600" />
-              </div>
-              
-              <h3 className="text-2xl font-serif text-sage-600 mb-4">
-                Confirmações via Google Forms
-              </h3>
-              
-              <p className="text-stone-600 mb-6">
-                As confirmações de presença agora são coletadas através do Google Forms. 
-                Clique no botão abaixo para acessar o formulário e ver as respostas.
-              </p>
-              
-              <button
-                onClick={openGoogleForms}
-                className="inline-flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                <ExternalLink className="w-5 h-5" />
-                <span>Abrir Google Forms</span>
-              </button>
-              
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-700">
-                  <strong>💡 Dica:</strong> Para ver as respostas, acesse o Google Forms e clique em "Respostas" 
-                  ou crie uma planilha do Google Sheets conectada ao formulário.
-                </p>
+          <>
+            {/* Filters and Search for RSVPs */}
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-stone-400" />
+                    <input
+                      type="text"
+                      placeholder="Buscar confirmações..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 pr-4 py-2 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-stone-400" />
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value as 'all' | 'yes' | 'no')}
+                      className="pl-10 pr-8 py-2 border border-rose-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    >
+                      <option value="all">Todos</option>
+                      <option value="yes">Confirmaram</option>
+                      <option value="no">Não Comparecerão</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  onClick={exportRsvpToCSV}
+                  className="flex items-center space-x-2 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Exportar CSV</span>
+                </button>
               </div>
             </div>
-          </div>
+
+            {/* Database Status Indicator */}
+            <div className="mb-6">
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                rsvpService.isNetlifyEnvironment() 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-yellow-100 text-yellow-800'
+              }`}>
+                {rsvpService.isNetlifyEnvironment() 
+                  ? '🔒 Dados salvos no Netlify Database' 
+                  : '💾 Modo desenvolvimento (localStorage)'}
+              </div>
+            </div>
+
+            {/* RSVP Grid */}
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+                <p className="text-stone-500 mt-4">Carregando confirmações...</p>
+              </div>
+            ) : (
+              <div className="grid gap-6">
+                {filteredRsvps.map((rsvp) => (
+                  <div key={rsvp.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-semibold text-sage-600">{rsvp.name}</h3>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            rsvp.attending === 'yes' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {rsvp.attending === 'yes' ? 'Confirmado' : 'Não Comparecerá'}
+                          </span>
+                        </div>
+                        
+                        <div className="space-y-1 text-sm text-stone-600">
+                          <div className="flex items-center space-x-2">
+                            <Mail className="w-4 h-4" />
+                            <span>{rsvp.email}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Phone className="w-4 h-4" />
+                            <span>{rsvp.phone}</span>
+                          </div>
+                          {rsvp.message && (
+                            <div className="flex items-start space-x-2 mt-2">
+                              <MessageSquare className="w-4 h-4 mt-0.5" />
+                              <span className="italic">"{rsvp.message}"</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="mt-3 text-xs text-stone-500">
+                          Enviado em: {new Date(rsvp.submittedAt || '').toLocaleString('pt-BR')}
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-2 ml-4">
+                        <button
+                          onClick={() => setSelectedRsvp(rsvp)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Ver detalhes"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteRsvp(rsvp.id!)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {filteredRsvps.length === 0 && !isLoading && (
+                  <div className="text-center py-12">
+                    <Users className="w-12 h-12 text-stone-400 mx-auto mb-4" />
+                    <p className="text-stone-500">Nenhuma confirmação encontrada</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         ) : activeTab === 'messages' ? (
-          /* Messages Content */
           <>
             {/* Filters and Search for Messages */}
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
@@ -277,7 +485,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 </div>
 
                 <button
-                  onClick={exportToCSV}
+                  onClick={exportMessagesToCSV}
                   className="flex items-center space-x-2 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
                 >
                   <Download className="w-4 h-4" />
@@ -343,6 +551,70 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
         {activeTab === 'photos' && <PhotoUpload />}
       </div>
+
+      {/* Modal for viewing RSVP details */}
+      {selectedRsvp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-serif text-sage-600">Detalhes da Confirmação</h3>
+                <button
+                  onClick={() => setSelectedRsvp(null)}
+                  className="text-stone-400 hover:text-stone-600"
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-stone-700">Nome</label>
+                  <p className="text-sage-600">{selectedRsvp.name}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700">Email</label>
+                    <p className="text-sage-600">{selectedRsvp.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700">Telefone</label>
+                    <p className="text-sage-600">{selectedRsvp.phone}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-stone-700">Confirmação</label>
+                  <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${
+                    selectedRsvp.attending === 'yes' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {selectedRsvp.attending === 'yes' ? 'Confirmou Presença' : 'Não Comparecerá'}
+                  </span>
+                </div>
+
+                {selectedRsvp.message && (
+                  <div>
+                    <label className="block text-sm font-medium text-stone-700">Mensagem</label>
+                    <div className="bg-rose-50 p-4 rounded-lg">
+                      <p className="text-sage-600 italic">"{selectedRsvp.message}"</p>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-stone-700">Data de Envio</label>
+                  <p className="text-sage-600">
+                    {new Date(selectedRsvp.submittedAt || '').toLocaleString('pt-BR')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal for viewing gift message details */}
       {selectedMessage && (
