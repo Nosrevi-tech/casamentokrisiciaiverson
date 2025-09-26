@@ -83,23 +83,6 @@ export default function Venues() {
           ))}
         </div>
 
-        <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
-          <h3 className="text-2xl font-serif text-sage-600 mb-6 text-center">Informações Importantes</h3>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h4 className="text-lg font-semibold text-sage-600 mb-4">Dress Code</h4>
-              <p className="text-stone-600 mb-4">
-                Traje social completo. Cores claras são bem-vindas, mas evitem branco total (reservado para a noiva).
-              </p>
-              
-            </div>
-            
-            <div>
-              
-              
-          
-            </div>
           </div>
         </div>
       </div>
