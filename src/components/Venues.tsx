@@ -78,7 +78,6 @@ export default function Venues() {
                     <span>Ver no Mapa</span>
                   </a>
                 </div>
-              </div>
             </div>
           ))}
         </div>
