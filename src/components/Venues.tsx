@@ -10,7 +10,7 @@ export default function Venues() {
       time: '17:00',
       phone: '(32) 3331-0270',
       mapUrl: 'https://g.co/kgs/65sRtKA',
-      image: 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqC_dTMb3fHAnaclbOkRZDlvzfPQ63VxrQyEd1JhZx7fEtJGFYgDCpx2klu7PW0UXcQkXi96aUWg3CUkPSPg4di5mW47c2vBfbSviQXU5sY9WfhjV98pMrZdFIulaaEqij5uloD=s680-w680-h510-rw'
+      image: 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nou_ijVdm_F4u8laBFoO-cLJNionDfunn3WgbTRxg_E0Z8xAj7QBC6tHpKuSPwcZPbk2EC56tqibUcwlUV7Qi5w0iBlTkRX9h-gtEEWqePVEP6buI-3eEVPARw1ffPAm3JUcr3O=w243-h305-n-k-no-nu'
     },
     {
       type: 'Festa de Casamento',
