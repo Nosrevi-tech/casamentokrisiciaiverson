@@ -65,7 +65,7 @@ export default function Footer() {
 
         <div className="border-t border-sage-500 pt-8 text-center">
           <p className="text-rose-300">
-            © 2024 Kriscia & Iverson. Feito com muito amor para nosso dia especial.
+            © 2026 Kriscia & Iverson. Feito com muito amor para nosso dia especial.
           </p>
         </div>
       </div>
