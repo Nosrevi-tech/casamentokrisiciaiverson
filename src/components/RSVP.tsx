@@ -111,15 +111,11 @@ export default function RSVP() {
                   </div>
                   <div>
                     <p><strong>Festa:</strong></p>
-                    <p className="text-sm">Espaço Villa Fontana</p>
+                    <p className="text-sm">Benevenuto Deguste Bar e Restaurante</p>
                     <p className="text-sm">Barbacena - MG</p>
                   </div>
                 </div>
                 
-                <h4 className="text-lg font-semibold text-sage-600 mb-4 mt-6">Estacionamento</h4>
-                <p className="text-stone-600">
-                  Ambos os locais possuem estacionamento gratuito para os convidados.
-                </p>
               </div>
             </div>
           </div>
