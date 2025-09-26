@@ -81,10 +81,6 @@ export default function Venues() {
             </div>
           ))}
         </div>
-
-          </div>
-        </div>
-      </div>
     </section>
   );
 }
