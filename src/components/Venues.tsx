@@ -10,7 +10,7 @@ export default function Venues() {
       time: '17:00',
       phone: '(32) 3331-0270',
       mapUrl: 'https://g.co/kgs/65sRtKA',
-      image: 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nou_ijVdm_F4u8laBFoO-cLJNionDfunn3WgbTRxg_E0Z8xAj7QBC6tHpKuSPwcZPbk2EC56tqibUcwlUV7Qi5w0iBlTkRX9h-gtEEWqePVEP6buI-3eEVPARw1ffPAm3JUcr3O=w243-h305-n-k-no-nu'
+      image: '/Fotos localizacao/unnamed (1).webp'
     },
     {
       type: 'Festa de Casamento',
@@ -19,7 +19,7 @@ export default function Venues() {
       time: '19:00',
       phone: '(32) 3333-7237',
       mapUrl: 'https://share.google/gSFXhaDkfuHmGK4I0',
-      image: 'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nq8UE_9kjzMAMS4CChituxvFk9JPrgUqb5nVgNpYh7wB_oQmSv-hxiwC_XnECdtUexYXtuPKelDf3wGr66xQ_MvDMhJAqU3kWNQG1rM8pWTRn3zm35Jmh1u5O6Zv0fjdgoS1pYICThnV8DV=s680-w680-h510-rw' // Placeholder para imagem inválida
+      image: '/Fotos localizacao/unnamed.webp'  
     }
   ];
 
