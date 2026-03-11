@@ -57,7 +57,7 @@ export default function Footer() {
             <div className="space-y-2 text-rose-200">
               <p>Data: 27 de Julho, 2026</p>
               <p>Horário: 17h às 2h</p>
-              <p>Dress Code: Social</p>
+              <p>Dress Code: Esporte Fino</p>
               <p>Confirmação até: 15/05/2024</p>
             </div>
           </div>
