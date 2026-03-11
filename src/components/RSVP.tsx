@@ -94,7 +94,7 @@ export default function RSVP() {
                 
                 <h4 className="text-lg font-semibold text-sage-600 mb-4 mt-6">Dress Code</h4>
                 <p className="text-stone-600">
-                  Traje social completo. Cores claras são bem-vindas, mas evitem branco total (reservado para a noiva).
+                  Traje Esporte Fino. Cores claras são bem-vindas, mas evitem branco total (reservado para a noiva).
                 </p>
               </div>
               
